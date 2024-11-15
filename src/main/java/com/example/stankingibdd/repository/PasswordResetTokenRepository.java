@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Integer> {
 
@@ -15,13 +16,13 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
      * @param token токен
      * @return запись
      */
-    PasswordResetToken findByToken(String token);
+    PasswordResetToken findByToken(UUID token);
 
     /**
      * Поиск записей по телефону
      *
      * @param phone телефон клиента
-     * @return список записей
+     * @return список записей типа {@link PasswordResetToken}
      */
     @Query("SELECT prt FROM PasswordResetToken prt WHERE prt.client.phone = :phone")
     List<PasswordResetToken> findByPhone(@Param("phone") String phone);

@@ -3,6 +3,7 @@ package com.example.stankingibdd.service;
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.PasswordResetToken;
 import com.example.stankingibdd.exception.ForgotPasswordException;
+import com.example.stankingibdd.exception.ProfileException;
 import com.example.stankingibdd.exception.RegistrationException;
 import com.example.stankingibdd.exception.ResetPasswordException;
 import com.example.stankingibdd.mapper.ClientMapper;
@@ -11,9 +12,10 @@ import com.example.stankingibdd.model.ForgotPasswordRequest;
 import com.example.stankingibdd.model.ResetPasswordRequest;
 import com.example.stankingibdd.repository.ClientRepository;
 import com.example.stankingibdd.repository.PasswordResetTokenRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,24 +41,18 @@ public class ClientServiceImpl implements ClientService {
     public void registerClient(ClientDto clientDto) {
         if (Objects.isNull(clientDto)) {
             final String errorMessage = "Невозможно зарегистрировать пустого клиента";
-
-            log.info(errorMessage);
             throw new RegistrationException(errorMessage);
         }
 
         String phone = clientDto.getPhone();
         if (clientRepository.existsClientByPhone(phone)) {
             final String errorMessage = "Клиент с телефоном " + phone +  " уже зарегистрирован";
-
-            log.info(errorMessage);
             throw new RegistrationException(errorMessage);
         }
 
         String passport = clientDto.getPassport();
         if (clientRepository.existsClientByPassport(passport)) {
             final String errorMessage = "Клиент с паспортом " + passport +  " уже зарегистрирован";
-
-            log.info(errorMessage);
             throw new RegistrationException(errorMessage);
         }
 
@@ -70,24 +66,29 @@ public class ClientServiceImpl implements ClientService {
     public void forgotPassword(ForgotPasswordRequest request) {
         if (Objects.isNull(request)) {
             final String errorMessage = "Невозможно восстановить пароль так как запрос пустой";
-
-            log.info(errorMessage);
             throw new ForgotPasswordException(errorMessage);
         }
 
+        String currentClientPhone = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
         String phone = request.getPhone();
+        if (!currentClientPhone.equals(phone)) {
+            final String errorMessage = "Вы ввели телефон, не соответствующий вашему номеру телефона";
+            throw new ForgotPasswordException(errorMessage);
+        }
+
         Client client = clientRepository.findByPhone(phone);
         if (Objects.isNull(client)) {
             final String errorMessage = "Клиент с телефоном " + phone +  " не существует";
-
-            log.info(errorMessage);
             throw new ForgotPasswordException(errorMessage);
         }
 
         List<PasswordResetToken> passwordResetTokens = passwordResetTokenRepository.findByPhone(phone);
         passwordResetTokenRepository.deleteAll(passwordResetTokens);
 
-        String token = UUID.randomUUID().toString();
+        UUID token = UUID.randomUUID();
         PasswordResetToken passwordResetToken = PasswordResetToken.builder()
                 .token(token)
                 .client(client)
@@ -102,26 +103,20 @@ public class ClientServiceImpl implements ClientService {
     public void resetPassword(ResetPasswordRequest request) {
         if (Objects.isNull(request)) {
             final String errorMessage = "Невозможно восстановить пароль, когда пришел пустой запрос";
-
-            log.info(errorMessage);
             throw new ResetPasswordException(errorMessage);
         }
 
-        String token = request.getToken();
+        UUID token = UUID.fromString(request.getToken());
         String newPassword = request.getNewPassword();
         String confirmPassword = request.getConfirmPassword();
 
         if (!newPassword.equals(confirmPassword)) {
             final String errorMessage = "Пароли не совпадают";
-
-            log.info(errorMessage);
             throw new ResetPasswordException(errorMessage);
         }
 
         if (!validatePasswordResetToken(token)) {
             final String errorMessage = "Пришел некорректный токен";
-
-            log.info(errorMessage);
             throw new ResetPasswordException(errorMessage);
         }
 
@@ -129,8 +124,6 @@ public class ClientServiceImpl implements ClientService {
         Client client = resetToken.getClient();
         if (Objects.isNull(client)) {
             final String errorMessage = "Нет клиента для сброса пароля";
-
-            log.info(errorMessage);
             throw new ResetPasswordException(errorMessage);
         }
 
@@ -140,7 +133,31 @@ public class ClientServiceImpl implements ClientService {
         passwordResetTokenRepository.delete(resetToken);
     }
 
-    private boolean validatePasswordResetToken(String token) {
+    @Override
+    public void saveClient(ClientDto clientDto) {
+        if (Objects.isNull(clientDto)) {
+            final String errorMessage = "Невозможно сохранить изменения пустого клиента";
+            throw new ProfileException(errorMessage);
+        }
+
+        String phone = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+        Client clientFromDb = clientRepository.findByPhone(phone);
+        String passport = clientDto.getPassport();
+        if (!clientFromDb.getPassport().equals(passport)
+                && clientRepository.existsClientByPassport(passport)) {
+            final String errorMessage = "Клиент с паспортом " + passport +  " уже существует";
+            throw new ProfileException(errorMessage);
+        }
+
+        Client client = clientMapper.map(clientFromDb, clientMapper.map(clientDto));
+        updateSecurityContextClient(client);
+
+        clientRepository.save(client);
+    }
+
+    private boolean validatePasswordResetToken(UUID token) {
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token);
         return Objects.nonNull(resetToken) && !resetToken.isExpired();
     }
@@ -150,5 +167,17 @@ public class ClientServiceImpl implements ClientService {
         cal.setTime(new Date());
         cal.add(Calendar.MINUTE, EXPIRATION);
         return new Date(cal.getTime().getTime());
+    }
+
+    private void updateSecurityContextClient(Client client) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof Client originalClient) {
+            originalClient.setFullName(client.getFullName());
+            originalClient.setDateOfBirth(client.getDateOfBirth());
+            originalClient.setAddress(client.getAddress());
+            originalClient.setPassport(client.getPassport());
+            originalClient.setPassportIssueDate(client.getPassportIssueDate());
+            originalClient.setPassportDepartmentCode(client.getPassportDepartmentCode());
+        }
     }
 }

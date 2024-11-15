@@ -9,21 +9,28 @@ public interface ClientService {
     /**
      * Регистрация клиента
      *
-     * @param clientDto модель клиента
+     * @param clientDto модель клиента {@link ClientDto}
      */
     void registerClient(ClientDto clientDto);
 
     /**
-     * генерация информации для восстановления пароля пользователя
+     * Генерация информации для восстановления пароля пользователя
      *
-     * @param request Модель запроса на восстановление пароля
+     * @param request модель запроса на восстановление пароля {@link ForgotPasswordRequest}
      */
     void forgotPassword(ForgotPasswordRequest request);
 
     /**
-     * генерация информации для восстановления пароля пользователя
+     * Генерация информации для восстановления пароля пользователя
      *
-     * @param request Модель запроса на сброс пароля
+     * @param request модель запроса на сброс пароля {@link ResetPasswordRequest}
      */
     void resetPassword(ResetPasswordRequest request);
+
+    /**
+     * Сохранение изменений клиента в профиле
+     *
+     * @param clientDto модель клиента {@link ClientDto}
+     */
+    void saveClient(ClientDto clientDto);
 }

@@ -2,10 +2,10 @@ CREATE TABLE client
 (
     client_number            UUID         NOT NULL,
     license_number           UUID,
-    full_name                VARCHAR(45)  NOT NULL,
+    full_name                VARCHAR(255) NOT NULL,
     date_of_birth            DATE         NOT NULL,
     phone                    VARCHAR(11)  NOT NULL,
-    address                  VARCHAR(100) NOT NULL,
+    address                  VARCHAR(255) NOT NULL,
     passport                 VARCHAR(10)  NOT NULL,
     passport_issue_date      DATE         NOT NULL,
     passport_department_code INT          NOT NULL,
@@ -19,11 +19,11 @@ CREATE TABLE client
 
 CREATE TABLE driving_license
 (
-    license_number  UUID         NOT NULL,
-    client_number   UUID         NOT NULL,
-    issue_date      DATE         NOT NULL DEFAULT '2024-01-01',
-    expiration_date DATE         NOT NULL,
-    department_code VARCHAR(45)  NOT NULL,
+    license_number  UUID        NOT NULL,
+    client_number   UUID        NOT NULL,
+    issue_date      DATE        NOT NULL DEFAULT CURRENT_DATE,
+    expiration_date DATE        NOT NULL,
+    department_code VARCHAR(45) NOT NULL,
     PRIMARY KEY (license_number),
     UNIQUE (client_number),
     CONSTRAINT client_number FOREIGN KEY (client_number) REFERENCES client (client_number),
@@ -35,17 +35,17 @@ CREATE TABLE driving_license
 CREATE TABLE accident
 (
     accident_number UUID         NOT NULL,
-    time            TIME         NOT NULL,
-    location        VARCHAR(256) NOT NULL,
-    description     VARCHAR(256)          DEFAULT NULL,
+    time            TIME         NOT NULL DEFAULT CURRENT_TIME,
+    location        VARCHAR(255) NOT NULL,
+    description     VARCHAR(255)          DEFAULT NULL,
     date            DATE         NOT NULL DEFAULT CURRENT_DATE,
     PRIMARY KEY (accident_number)
 );
 
 CREATE TABLE category
 (
-    category_number UUID         NOT NULL,
-    category_name   VARCHAR(45)  NOT NULL DEFAULT 'B',
+    category_number UUID       NOT NULL,
+    category_name   VARCHAR(3) NOT NULL DEFAULT 'B',
     PRIMARY KEY (category_number),
     CONSTRAINT category_chk_1 CHECK (category_name IN
                                      ('A', 'A1', 'B', 'B1', 'C', 'C1', 'D', 'D1', 'BE', 'CE', 'C1E', 'DE', 'D1E', 'M',
@@ -65,16 +65,16 @@ CREATE TABLE vehicle
 (
     vehicle_number        UUID         NOT NULL,
     client_number         UUID         NOT NULL,
-    model                 VARCHAR(45)  NOT NULL,
-    manufacturer          VARCHAR(45)  NOT NULL,
+    model                 VARCHAR(255) NOT NULL,
+    manufacturer          VARCHAR(255) NOT NULL,
     year_of_manufacture   INT          NOT NULL,
-    color                 VARCHAR(45)  NOT NULL,
+    color                 VARCHAR(255) NOT NULL,
     mileage               INT          NOT NULL,
     engine_volume         FLOAT        NOT NULL,
     horsepower            INT          NOT NULL,
-    registration_number   VARCHAR(45)  NOT NULL,
+    registration_number   VARCHAR(9)   NOT NULL,
     registration_date     DATE         NOT NULL,
-    registration_location VARCHAR(45)  DEFAULT NULL,
+    registration_location VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (vehicle_number),
     UNIQUE (registration_number),
     CONSTRAINT client_number FOREIGN KEY (client_number) REFERENCES client (client_number),
@@ -95,26 +95,36 @@ CREATE TABLE fine
 (
     fine_number    UUID         NOT NULL,
     vehicle_number UUID         NOT NULL,
-    date           DATE         NOT NULL,
-    time           TIME         NOT NULL,
-    location       VARCHAR(45)  NOT NULL,
+    date           DATE         NOT NULL DEFAULT CURRENT_DATE,
+    time           TIME         NOT NULL DEFAULT CURRENT_TIME,
+    location       VARCHAR(255) NOT NULL,
     amount         INT          NOT NULL,
-    type           VARCHAR(45)  NOT NULL,
-    description    VARCHAR(45)  DEFAULT NULL,
-    article        VARCHAR(45)  NOT NULL,
+    type           VARCHAR(255) NOT NULL,
+    description    VARCHAR(255)          DEFAULT NULL,
+    article        VARCHAR(255) NOT NULL,
     PRIMARY KEY (fine_number),
     UNIQUE (vehicle_number),
     CONSTRAINT vehicle_number FOREIGN KEY (vehicle_number) REFERENCES vehicle (vehicle_number) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fine_chk_1 CHECK (date <= CURRENT_DATE)
+    CONSTRAINT fine_chk_1 CHECK (date <= CURRENT_DATE
+)
     );
 
 CREATE TABLE password_reset_token
 (
-    password_reset_token_number UUID         NOT NULL,
-    token                       VARCHAR(255) NOT NULL,
-    client_number               UUID         NOT NULL,
-    expiry_date                 TIMESTAMP    NOT NULL,
+    password_reset_token_number UUID      NOT NULL,
+    token                       UUID      NOT NULL,
+    client_number               UUID      NOT NULL,
+    expiry_date                 TIMESTAMP NOT NULL,
     PRIMARY KEY (password_reset_token_number),
     UNIQUE (client_number),
+    UNIQUE (token),
     CONSTRAINT client_number FOREIGN KEY (client_number) REFERENCES client (client_number)
+);
+
+CREATE TABLE persistent_logins
+(
+    username  VARCHAR(64) NOT NULL,
+    series    VARCHAR(64) PRIMARY KEY,
+    token     VARCHAR(64) NOT NULL,
+    last_used TIMESTAMP   NOT NULL
 );

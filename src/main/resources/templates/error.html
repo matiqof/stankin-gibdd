@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Произошла ошибка</title>
+  <link rel="icon" th:href="@{/images/logo.png}" type="image/x-icon">
+  <link rel="stylesheet" th:href="@{/css/error.css}">
+  <link rel="stylesheet" th:href="@{/css/body.css}">
+</head>
+<body>
+<div class="error-container">
+  <h1 th:text="${statusCode}">Код ошибки</h1>
+  <h2>
+    <span th:if="${statusCode == 404}">Страница не найдена</span>
+    <span th:if="${statusCode == 403}">Введены неправильные данные</span>
+    <span th:if="${statusCode >= 500 and statusCode < 600}">Внутренняя ошибка сервера</span>
+    <span th:if="${statusCode < 400 or statusCode >= 600}">Что-то пошло не так</span>
+  </h2>
+  <p th:if="${statusCode == 403}">Извините, произошла ошибка. Возможно вы ввели данные не соответствующие валидации, вернитесь на главную страницу.</p>
+  <p th:if="${statusCode == 404}">Извините, произошла ошибка. Возможно вы перешли по адресу, которого не существует, вернитесь на главную страницу.</p>
+  <p th:if="${statusCode >= 500 and statusCode < 600}">Извините, произошла ошибка. Ошибка произошла на сервере, возможно это произошло не по вашей вине, вернитесь на главную страницу.</p>
+  <p th:if="${statusCode < 400 or statusCode >= 600}">Извините, произошла ошибка. Произошла неизвестная нам ошибка, уже работаем над этим, а пока вернитесь на главную страницу.</p>
+  <div class="back-link">
+    <button onclick="window.location.href='/'">Вернуться на главную</button>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+.error-container {
+    padding: 20px;
+    width: 450px;
+    text-align: center;
+}
+
+.error-container h1 {
+    margin-bottom: 10px;
+    color: #f85149;
+    font-size: 48px;
+}
+
+.error-container h2 {
+    margin-bottom: 20px;
+    color: #f0f6fc;
+    font-size: 24px;
+}
+
+.error-container p {
+    color: #c9d1d9;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.back-link button {
+    padding: 10px;
+    background-color: #238636;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.back-link button:hover {
+    background-color: #2ea043;
+}

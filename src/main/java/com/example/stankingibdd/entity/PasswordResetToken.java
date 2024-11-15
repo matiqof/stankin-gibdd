@@ -30,11 +30,11 @@ public class PasswordResetToken {
         name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "password_reset_token_number", nullable = false)
+    @Column(name = "password_reset_token_number", nullable = false, unique = true)
     private UUID password_reset_token_number;
 
     @Column(name = "token", nullable = false, unique = true)
-    private String token;
+    private UUID token;
 
     @Column(name = "expiry_date", nullable = false)
     private Date expiryDate;

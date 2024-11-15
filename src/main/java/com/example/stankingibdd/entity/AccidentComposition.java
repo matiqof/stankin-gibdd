@@ -2,10 +2,12 @@ package com.example.stankingibdd.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
@@ -14,10 +16,15 @@ import java.util.UUID;
 public class AccidentComposition {
 
     @Id
-    @Column(name = "accident_number", nullable = false)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "accident_number", nullable = false, unique = true)
     private UUID accidentNumber;
 
-    @Column(name = "vehicle_number", nullable = false, unique = true)
+    @Column(name = "vehicle_number", nullable = false)
     private UUID vehicleNumber;
 
     @ManyToOne

@@ -5,6 +5,7 @@
     <title>Вход в систему</title>
     <link rel="icon" th:href="@{/images/logo.png}" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
 </head>
 <body>
 <div class="login-container">
@@ -26,13 +27,10 @@
         </div>
     </form>
     <div th:if="${param.error}" class="error-message">
-        Неверный телефон или пароль.
+        <p>Ошибка аутентификации, некорректные данные</p>
     </div>
     <div class="forgot-password-link">
         <a href="/forgot-password">Забыли пароль?</a>
-    </div>
-    <div class="register-link">
-        <a href="/register">Нет аккаунта? Зарегистрироваться</a>
     </div>
 </div>
 </body>

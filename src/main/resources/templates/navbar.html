@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Навигационный бар</title>
+</head>
+<body>
+<nav class="navbar" th:fragment="navbar">
+  <div class="navbar-left">
+    <img th:src="@{/images/logo.png}" alt="Логотип" class="logo">
+    <a href="/">Главная</a>
+  </div>
+  <div class="navbar-right">
+    <a href="/profile">Профиль</a>
+    <a href="/logout">Выйти</a>
+  </div>
+</nav>
+</body>
+</html>

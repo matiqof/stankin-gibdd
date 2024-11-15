@@ -1,43 +1,82 @@
 package com.example.stankingibdd.controller;
 
+import com.example.stankingibdd.service.ViewService;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class ViewController {
+@RequiredArgsConstructor
+public class ViewController implements ErrorController {
+
+    private final ViewService viewService;
 
     @GetMapping("/")
     public String index() {
-        return "index";
+        return viewService.getIndexPage();
     }
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return viewService.getLoginPage();
     }
 
     @GetMapping("/register")
     public String register() {
-        return "register";
+        return viewService.getRegisterPage();
     }
 
     @GetMapping("/forgot-password")
-    public String forgotPassword() {
-        return "forgot-password";
+    public String forgotPassword(Model model) {
+        return viewService.getForgotPasswordPage(model);
     }
 
     @GetMapping("/forgot-password-success")
-    public String forgotPasswordSuccess() {
-        return "forgot-password-success";
+    public String forgotPasswordSuccess(Model model) {
+        return viewService.getForgotPasswordSuccessPage(model);
     }
 
     @GetMapping("/reset-password")
-    public String resetPassword() {
-        return "reset-password";
+    public String resetPassword(Model model) {
+        return viewService.getResetPasswordPage(model);
     }
 
     @GetMapping("/reset-password-success")
-    public String resetPasswordSuccess() {
-        return "reset-password-success";
+    public String resetPasswordSuccess(Model model) {
+        return viewService.getResetPasswordSuccessPage(model);
+    }
+
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        return viewService.getProfilePage(model);
+    }
+
+    @GetMapping("/profile-forgot-password")
+    public String profileForgotPassword(Model model) {
+        return viewService.getProfileForgotPasswordPage(model);
+    }
+
+    @GetMapping("/profile-forgot-password-success")
+    public String profileForgotPasswordSuccess(Model model) {
+        return viewService.getProfileForgotPasswordSuccessPage(model);
+    }
+
+    @GetMapping("/profile-reset-password")
+    public String profileResetPassword(Model model) {
+        return viewService.getProfileResetPasswordPage(model);
+    }
+
+    @GetMapping("/profile-reset-password-success")
+    public String profileResetPasswordSuccess(Model model) {
+        return viewService.getProfileResetPasswordSuccessPage(model);
+    }
+
+    @RequestMapping("/error")
+    public String error(HttpServletResponse response, Model model) {
+        return viewService.getErrorPage(response, model);
     }
 }

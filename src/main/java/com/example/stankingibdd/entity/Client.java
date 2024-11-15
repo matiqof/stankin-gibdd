@@ -39,25 +39,25 @@ public class Client implements UserDetails {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "client_number", nullable = false)
+    @Column(name = "client_number", nullable = false, unique = true)
     private UUID clientNumber;
 
     @Column(name = "license_number")
     private UUID licenseNumber;
 
-    @Column(name = "full_name", nullable = false, length = 45)
+    @Column(name = "full_name", nullable = false)
     private String fullName;
 
     @Column(name = "date_of_birth", nullable = false)
     private Date dateOfBirth;
 
-    @Column(name = "phone", nullable = false, length = 45, unique = true)
+    @Column(name = "phone", nullable = false, length = 11, unique = true)
     private String phone;
 
-    @Column(name = "address", nullable = false, length = 45)
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "passport", nullable = false, unique = true)
+    @Column(name = "passport", nullable = false, length = 10, unique = true)
     private String passport;
 
     @Column(name = "passport_issue_date", nullable = false)
@@ -66,11 +66,11 @@ public class Client implements UserDetails {
     @Column(name = "passport_department_code", nullable = false)
     private int passportDepartmentCode;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 60)
     private String clientPassword;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = false, length = 10)
     private ClientRole role;
 
     @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
