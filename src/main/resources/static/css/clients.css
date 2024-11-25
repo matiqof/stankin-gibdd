@@ -1,0 +1,331 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #0d1117;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: #c9d1d9;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    background-color: #161b22;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    border: 1px solid #21262d;
+}
+
+.clients-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #161b22;
+    color: #c9d1d9;
+}
+
+.clients-table th, .clients-table td {
+    border: 1px solid #21262d;
+    padding: 12px;
+    text-align: left;
+}
+
+.clients-table th {
+    background-color: #238636;
+    color: #c9d1d9;
+}
+
+.clients-table tr:nth-child(even) {
+    background-color: #161b22;
+}
+
+.clients-table tr:hover {
+    background-color: #21262d;
+}
+
+.button-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.button-container button, .button-container a, .edit-button {
+    text-decoration: none;
+    background-color: #238636;
+    color: #c9d1d9;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.button-container button:hover, .button-container a:hover, .edit-button:hover {
+    background-color: #2ea043;
+}
+
+.modal {
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    animation-name: fadeIn;
+    animation-duration: 0.3s;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-none-display {
+    display: none;
+}
+
+.modal-flex-display {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #161b22;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 30%;
+    text-align: center;
+    border: 1px solid #21262d;
+    animation-name: slideIn;
+    animation-duration: 0.3s;
+    position: relative;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #6e7681;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.main-container {
+    background-color: #161b22;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 600px;
+    text-align: center;
+    border: 1px solid #21262d;
+    margin-top: 70px;
+}
+
+.logo-text-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.main-container h1 {
+    margin: 0;
+    color: #f0f6fc;
+    font-size: 24px;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    width: 48%;
+    text-align: left;
+}
+
+.form-group label, .form-role-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #c9d1d9;
+    font-size: 14px;
+}
+
+.form-group input, .form-role-group input, .sort-form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    box-sizing: border-box;
+    background-color: #0d1117;
+    color: #c9d1d9;
+    font-size: 14px;
+}
+
+.form-group input:disabled {
+    color: #6e7681;
+}
+
+.form-group input:focus, .form-role-group input:focus, .sort-form input:focus {
+    border-color: #58a6ff;
+    outline: none;
+}
+
+.form-group select, .form-role-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    box-sizing: border-box;
+    background-color: #0d1117;
+    color: #c9d1d9;
+    font-size: 14px;
+}
+
+.form-group select:focus, .form-role-group select:focus {
+    border-color: #58a6ff;
+    outline: none;
+}
+
+.error-message {
+    color: #f85149;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.change-password {
+    margin-top: 10px;
+}
+
+.change-password a {
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.change-password a:hover {
+    text-decoration: underline;
+}
+
+.modal-button {
+    background-color: #238636;
+    width: 45%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal-button:hover {
+    background-color: #2ea043;
+}
+
+.required {
+    color: #f85149;
+    margin-left: 5px;
+}
+
+.button-row {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.form-role-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.form-role-group {
+    width: 100%;
+    text-align: left;
+}
+
+.delete-icon {
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.success-image {
+    width: 50px;
+    height: auto;
+    margin-bottom: 10px;
+    margin-left: 20px;
+}
+
+.unsuccess-image {
+    width: 50px;
+    height: auto;
+    margin-bottom: 10px;
+    margin-left: 20px;
+}
+
+.header-with-sort {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sort-form {
+    display: flex;
+    align-items: center;
+}
+
+.sort-form input {
+    margin-right: 10px;
+}
+
+.sort-form button {
+    padding: 10px 20px;
+    background-color: #238636;
+    color: #c9d1d9;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 16px;
+}
+
+.sort-form button:hover {
+    background-color: #2ea043;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes slideIn {
+    from {transform: translateY(-50px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+}
+
+@keyframes fadeOut {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+@keyframes slideOut {
+    from {transform: translateY(0); opacity: 1;}
+    to {transform: translateY(-50px); opacity: 0;}
+}

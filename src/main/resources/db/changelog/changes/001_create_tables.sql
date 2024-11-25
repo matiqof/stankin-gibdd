@@ -10,7 +10,7 @@ CREATE TABLE client
     passport_issue_date      DATE         NOT NULL,
     passport_department_code INT          NOT NULL,
     password                 VARCHAR(60)  NOT NULL,
-    role                     VARCHAR(10)  NOT NULL,
+    role                     VARCHAR(15)  NOT NULL,
     PRIMARY KEY (client_number),
     UNIQUE (passport),
     UNIQUE (phone),

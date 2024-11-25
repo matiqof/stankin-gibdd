@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 
 @Mapper(componentModel = "spring")
@@ -17,6 +18,10 @@ public abstract class ClientMapper {
     @Mapping(target = "drivingLicense", ignore = true)
     @Mapping(target = "vehicles", ignore = true)
     public abstract Client map(ClientDto source);
+
+    public abstract ClientDto map(Client source);
+
+    public abstract List<ClientDto> map(List<Client> source);
 
     public Client map(Client source, Client external) {
         if (Objects.nonNull(external)) {

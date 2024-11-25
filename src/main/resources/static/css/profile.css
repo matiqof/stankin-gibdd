@@ -1,4 +1,4 @@
-.profile-container {
+.main-container {
     background-color: #161b22;
     padding: 20px;
     border-radius: 6px;
@@ -6,7 +6,7 @@
     width: 600px;
     text-align: center;
     border: 1px solid #21262d;
-    margin-top: 70px;
+    margin-top: 50px;
 }
 
 .logo-text-container {
@@ -16,7 +16,7 @@
     margin-bottom: 30px;
 }
 
-.profile-container h1 {
+.main-container h1 {
     margin: 0;
     color: #f0f6fc;
     font-size: 24px;
@@ -76,7 +76,7 @@
     text-decoration: underline;
 }
 
-.profile-button {
+.modal-button {
     background-color: #238636;
     width: 50%;
     padding: 10px;
@@ -88,7 +88,7 @@
     transition: background-color 0.2s;
 }
 
-.profile-button:hover {
+.modal-button:hover {
     background-color: #2ea043;
 }
 
@@ -124,7 +124,6 @@
     animation-name: slideIn;
     animation-duration: 0.3s;
     position: relative;
-    margin: auto;
 }
 
 .close {
@@ -136,7 +135,7 @@
 
 .close:hover,
 .close:focus {
-    color: black;
+    color: #6e7681;
     text-decoration: none;
     cursor: pointer;
 }

@@ -16,7 +16,8 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
      * @param token токен
      * @return запись
      */
-    PasswordResetToken findByToken(UUID token);
+    @Query("SELECT prt FROM PasswordResetToken prt WHERE prt.token = :token")
+    PasswordResetToken findByToken(@Param("token") UUID token);
 
     /**
      * Поиск записей по телефону
@@ -24,6 +25,6 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
      * @param phone телефон клиента
      * @return список записей типа {@link PasswordResetToken}
      */
-    @Query("SELECT prt FROM PasswordResetToken prt WHERE prt.client.phone = :phone")
+    @Query("SELECT prt FROM PasswordResetToken prt JOIN prt.client c WHERE c.phone = :phone")
     List<PasswordResetToken> findByPhone(@Param("phone") String phone);
 }

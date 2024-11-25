@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Управление таблицей клиентов</title>
+  <link rel="icon" th:href="@{/images/logo.png}" type="image/x-icon">
+  <link rel="stylesheet" th:href="@{/css/clients.css}">
+  <link rel="stylesheet" th:href="@{/css/body.css}">
+  <link rel="stylesheet" th:href="@{/css/navbar.css}">
+</head>
+<body>
+<div th:insert="~{navbar :: navbar}"></div>
+<div class="container">
+  <div class="header-with-sort">
+    <h2>Список клиентов</h2>
+    <form class="sort-form">
+      <input type="text" id="searchQuery" placeholder="Введите текст для поиска">
+      <button type="button" onclick="sortClients()">Сортировать</button>
+    </form>
+  </div>
+  <table id="clientsTable" class="clients-table">
+    <thead>
+    <tr>
+      <th>Телефон</th>
+      <th>ФИО</th>
+      <th>Дата рождения</th>
+      <th>Адрес</th>
+      <th>Паспорт</th>
+      <th>Дата выдачи паспорта</th>
+      <th>Код подразделения</th>
+      <th>Роль</th>
+      <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="client : ${clients}" th:id="'client-' + ${client.phone}">
+      <td th:text="${client.phone}"></td>
+      <td th:text="${client.fullName}"></td>
+      <td th:text="${#dates.format(client.dateOfBirth, 'yyyy-MM-dd')}"></td>
+      <td th:text="${client.address}"></td>
+      <td th:text="${client.passport}"></td>
+      <td th:text="${#dates.format(client.passportIssueDate, 'yyyy-MM-dd')}"></td>
+      <td th:text="${client.passportDepartmentCode}"></td>
+      <td th:text="${client.role}"></td>
+      <td>
+        <button class="edit-button" th:attr="onclick='editClient(\'' + ${client.phone} + '\', \'' + ${client.clientPassword} + '\', \'' + ${client.fullName} + '\', \'' + ${#dates.format(client.dateOfBirth, 'yyyy-MM-dd')} + '\', \'' + ${client.address} + '\', \'' + ${client.passport} + '\', \'' + ${#dates.format(client.passportIssueDate, 'yyyy-MM-dd')} + '\', ' + ${client.passportDepartmentCode} + ', \'' + ${client.role} + '\')'">Редактировать</button>
+        <form th:action="@{/client/delete}" method="post" style="display: inline;">
+          <input type="hidden" name="phone" th:value="${client.phone}">
+          <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+            <img th:src="@{/images/delete.png}" alt="Delete" class="delete-icon">
+          </button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="button-container">
+    <button onclick="showAddClientForm()">Добавить клиента</button>
+    <a href="/clients">Обновить данные</a>
+  </div>
+
+  <div id="clientModal" class="modal modal-none-display">
+    <div id="clientModalContent" class="modal-content main-container">
+      <span onclick="hideClientModal()" class="close">&times;</span>
+      <h3 id="modalTitle">Добавить нового клиента</h3>
+      <form id="clientForm" method="post">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Телефон:</label>
+            <input type="text" maxlength="11" id="phone" name="phone" required>
+          </div>
+          <div class="form-group">
+            <label for="clientPassword">Пароль:</label>
+            <input type="password" maxlength="60" id="clientPassword" name="clientPassword" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fullName">ФИО:<span class="required">*</span></label>
+            <input type="text" id="fullName" name="fullName" required>
+          </div>
+          <div class="form-group">
+            <label for="dateOfBirth">Дата рождения:<span class="required">*</span></label>
+            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="address">Адрес проживания:<span class="required">*</span></label>
+            <input type="text" id="address" name="address" required>
+          </div>
+          <div class="form-group">
+            <label for="passport">Паспорт:<span class="required">*</span></label>
+            <input type="text" id="passport" name="passport" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="passportIssueDate">Дата выдачи паспорта:<span class="required">*</span></label>
+            <input type="date" id="passportIssueDate" name="passportIssueDate" required>
+          </div>
+          <div class="form-group">
+            <label for="passportDepartmentCode">Код подразделения паспорта:<span class="required">*</span></label>
+            <input type="number" id="passportDepartmentCode" name="passportDepartmentCode" required>
+          </div>
+        </div>
+        <div class="form-role-row">
+          <div class="form-role-group">
+            <label for="role">Роль:<span class="required">*</span></label>
+            <select id="role" name="role" required>
+              <option value="ROLE_USER">ROLE_USER</option>
+              <option value="ROLE_OPERATOR">ROLE_OPERATOR</option>
+              <option value="ROLE_INSPECTOR">ROLE_INSPECTOR</option>
+              <option value="ROLE_SYSTEM">ROLE_SYSTEM</option>
+              <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+            </select>
+          </div>
+        </div>
+        <div class="button-row">
+          <button class="modal-button" type="submit">Сохранить</button>
+          <button type="button" onclick="hideClientModal()" class="modal-button">Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="infoModal" class="modal modal-flex-display" th:if="${successSaveData != null || errorSaveData != null}">
+  <div id="infoModalContent" class="modal-content main-container">
+    <span onclick="hideInfoModal()" class="close">&times;</span>
+    <img th:if="${successSaveData}" th:src="@{/images/success.png}"  alt="Успех" class="success-image">
+    <img th:if="${errorSaveData}" th:src="@{/images/unsuccess.png}"  alt="Неудача" class="unsuccess-image">
+    <p th:if="${successSaveData}" th:text="${successSaveData}">Сообщение об успешном сохранении</p>
+    <p th:if="${errorSaveData}" th:text="${errorSaveData}">Сообщение об ошибке</p>
+    <button onclick="hideInfoModal()" class="modal-button">Закрыть</button>
+  </div>
+</div>
+
+<script th:src="@{/js/clients.js}"></script>
+</body>
+</html>

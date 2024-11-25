@@ -1,12 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Станкин ГИБДД</title>
-  <link rel="icon" th:href="@{/images/logo.png}" type="image/x-icon">
-  <link rel="stylesheet" th:href="@{/css/index.css}">
-  <link rel="stylesheet" th:href="@{/css/body.css}">
+    <meta charset="UTF-8">
+    <title>Станкин ГИБДД</title>
+    <link rel="icon" th:href="@{/images/logo.png}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
 </head>
 <body>
+<div th:insert="~{navbar :: navbar}"></div>
+<div class="container">
+    <h1>Проект: Web-версия СУБД для ГИБДД</h1>
+    <p>Данный проект представляет собой веб-интерфейс для управления базой данных Госавтоинспекции (ГИБДД). Он позволяет сотрудникам ГИБДД эффективно организовывать, хранить и обрабатывать информацию о транспортных средствах, водителях, нарушениях и других важных данных.</p>
+    <p><strong>Основные функции:</strong></p>
+    <p class="function-list">
+        Учет автомототранспорта.<br>
+        Учет дорожно-транспортных происшествий.<br>
+        Формирование штрафов.<br>
+        Учет водительских удостоверений.<br>
+        Поиск информации по всем данным.<br>
+        Регистрация транспортного средства.
+    </p>
+    <h2>Разработчик</h2>
+    <p><strong>Kuznetsov Matvey</strong><br>Developer<br>Основатель проекта</p>
+    <a href="/clients" class="button">Перейти к работе</a>
+</div>
 </body>
 </html>

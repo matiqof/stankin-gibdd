@@ -21,7 +21,10 @@ public class SecurityConfig {
 
     private final DataSource dataSource;
 
-    private static final String ROLE_ADMIN = ClientRole.ROLE_ADMIN.toString().replace("ROLE_", "");
+    private static final String ROLE_ADMIN = replaceRolePrefix(ClientRole.ROLE_ADMIN);
+    private static final String ROLE_OPERATOR = replaceRolePrefix(ClientRole.ROLE_OPERATOR);
+    private static final String ROLE_INSPECTOR =  replaceRolePrefix(ClientRole.ROLE_INSPECTOR);
+    private static final String ROLE_SYSTEM =  replaceRolePrefix(ClientRole.ROLE_SYSTEM);
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,11 +37,10 @@ public class SecurityConfig {
                         .requestMatchers("/forgot-password-success").permitAll()
                         .requestMatchers("/reset-password").permitAll()
                         .requestMatchers("/reset-password-success").permitAll()
-                        .requestMatchers("/profile-forgot-password").hasRole(ROLE_ADMIN)
-                        .requestMatchers("/profile-forgot-password-success").hasRole(ROLE_ADMIN)
-                        .requestMatchers("/profile-reset-password").hasRole(ROLE_ADMIN)
-                        .requestMatchers("/profile-reset-password-success").hasRole(ROLE_ADMIN)
-                        .requestMatchers("/register").hasRole(ROLE_ADMIN)
+                        .requestMatchers("/profile-forgot-password").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
+                        .requestMatchers("/profile-forgot-password-success").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
+                        .requestMatchers("/profile-reset-password").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
+                        .requestMatchers("/profile-reset-password-success").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -65,5 +67,9 @@ public class SecurityConfig {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);
         return tokenRepository;
+    }
+
+    private static String replaceRolePrefix(ClientRole role) {
+        return role.toString().replace("ROLE_", "");
     }
 }

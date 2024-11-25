@@ -2,9 +2,8 @@ package com.example.stankingibdd.service;
 
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.PasswordResetToken;
+import com.example.stankingibdd.exception.EditTablesException;
 import com.example.stankingibdd.exception.ForgotPasswordException;
-import com.example.stankingibdd.exception.ProfileException;
-import com.example.stankingibdd.exception.RegistrationException;
 import com.example.stankingibdd.exception.ResetPasswordException;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.model.ClientDto;
@@ -18,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -38,32 +38,7 @@ public class ClientServiceImpl implements ClientService {
     private static final int EXPIRATION = 60 * 24;
 
     @Override
-    public void registerClient(ClientDto clientDto) {
-        if (Objects.isNull(clientDto)) {
-            final String errorMessage = "Невозможно зарегистрировать пустого клиента";
-            throw new RegistrationException(errorMessage);
-        }
-
-        String phone = clientDto.getPhone();
-        if (clientRepository.existsClientByPhone(phone)) {
-            final String errorMessage = "Клиент с телефоном " + phone +  " уже зарегистрирован";
-            throw new RegistrationException(errorMessage);
-        }
-
-        String passport = clientDto.getPassport();
-        if (clientRepository.existsClientByPassport(passport)) {
-            final String errorMessage = "Клиент с паспортом " + passport +  " уже зарегистрирован";
-            throw new RegistrationException(errorMessage);
-        }
-
-        Client client = clientMapper.map(clientDto);
-        client.setClientPassword(passwordEncoder.encode(clientDto.getClientPassword()));
-
-        clientRepository.save(client);
-    }
-
-    @Override
-    public void forgotPassword(ForgotPasswordRequest request) {
+    public void forgotPassword(ForgotPasswordRequest request, boolean isFromProfile) {
         if (Objects.isNull(request)) {
             final String errorMessage = "Невозможно восстановить пароль так как запрос пустой";
             throw new ForgotPasswordException(errorMessage);
@@ -74,7 +49,7 @@ public class ClientServiceImpl implements ClientService {
                 .getName();
 
         String phone = request.getPhone();
-        if (!currentClientPhone.equals(phone)) {
+        if (isFromProfile && !currentClientPhone.equals(phone)) {
             final String errorMessage = "Вы ввели телефон, не соответствующий вашему номеру телефона";
             throw new ForgotPasswordException(errorMessage);
         }
@@ -96,7 +71,7 @@ public class ClientServiceImpl implements ClientService {
                 .build();
         passwordResetTokenRepository.save(passwordResetToken);
 
-        log.info("На этом этапе ссылка для восстановления должна быть отправлена на телефон, но это тестовый стенд, данная фнукция недоступна, сгенерированный токен " + token + " для продолжения перейдите по url " + "http://127.0.0.1:8080/reset-password?token=" + token);
+        log.info("На этом этапе ссылка для восстановления должна быть отправлена на телефон, но это тестовый стенд, данная функция недоступна, сгенерированный токен " + token + " для продолжения перейдите по url " + (isFromProfile ? "http://127.0.0.1:8080/profile-reset-password?token=" : "http://127.0.0.1:8080/reset-password?token=") + token);
     }
 
     @Override
@@ -137,22 +112,27 @@ public class ClientServiceImpl implements ClientService {
     public void saveClient(ClientDto clientDto) {
         if (Objects.isNull(clientDto)) {
             final String errorMessage = "Невозможно сохранить изменения пустого клиента";
-            throw new ProfileException(errorMessage);
+            throw new EditTablesException(errorMessage);
         }
 
-        String phone = SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getName();
+        String phone = clientDto.getPhone();
+        if (!StringUtils.hasLength(phone)) {
+            final String errorMessage = "Невозможно сохранить изменения клиента с пустым телефоном";
+            throw new EditTablesException(errorMessage);
+        }
+
         Client clientFromDb = clientRepository.findByPhone(phone);
         String passport = clientDto.getPassport();
         if (!clientFromDb.getPassport().equals(passport)
                 && clientRepository.existsClientByPassport(passport)) {
             final String errorMessage = "Клиент с паспортом " + passport +  " уже существует";
-            throw new ProfileException(errorMessage);
+            throw new EditTablesException(errorMessage);
         }
 
         Client client = clientMapper.map(clientFromDb, clientMapper.map(clientDto));
-        updateSecurityContextClient(client);
+        if (phone.equals(clientDto.getPhone())) {
+            updateSecurityContextClient(client);
+        }
 
         clientRepository.save(client);
     }

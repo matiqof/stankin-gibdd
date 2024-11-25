@@ -10,7 +10,7 @@
 </head>
 <body>
 <div th:insert="~{navbar :: navbar}"></div>
-<div class="profile-container">
+<div class="main-container">
   <div class="logo-text-container">
     <h1>Профиль клиента</h1>
   </div>
@@ -46,7 +46,7 @@
       </div>
     </div>
     <div>
-      <button class="profile-button" type="submit">Сохранить</button>
+      <button class="modal-button" type="submit">Сохранить</button>
     </div>
   </form>
   <div th:if="${error}" th:text="${error}" class="error-message">
@@ -58,26 +58,14 @@
 </div>
 
 <div id="successModal" class="modal" th:if="${successSaveClient}">
-  <div id="successModalContent" class="modal-content profile-container">
+  <div id="successModalContent" class="modal-content main-container">
     <span class="close">&times;</span>
     <img th:src="@{/images/success.png}" alt="Успех" class="success-image">
     <p>Изменения успешно сохранены!</p>
-    <button id="closeModal" class="profile-button">Закрыть</button>
+    <button id="closeModal" class="modal-button">Закрыть</button>
   </div>
 </div>
 
-<script>
-  document.addEventListener("click", function(event) {
-    const modal = document.getElementById("successModal");
-    const modalContent = document.getElementById("successModalContent");
-    if (event.target.classList.contains("close") || event.target.id === "closeModal") {
-      modal.style.animationName = "fadeOut";
-      modalContent.style.animationName = "slideOut";
-      setTimeout(() => {
-        modal.style.display = "none";
-      }, 290);
-    }
-  });
-</script>
+<script th:src="@{/js/profile.js}"></script>
 </body>
 </html>

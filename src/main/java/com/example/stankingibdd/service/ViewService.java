@@ -10,7 +10,15 @@ public interface ViewService {
      *
      * @return template страницы
      */
-    String getIndexPage();
+    String getIndexPage(Model model);
+
+    /**
+     * Получить template страницы управления таблицей клиентов
+     *
+     * @return template страницы
+     */
+    String getClientsPage(Model model);
+
 
     /**
      * Получить template страницы входа
@@ -18,13 +26,6 @@ public interface ViewService {
      * @return template страницы
      */
     String getLoginPage();
-
-    /**
-     * Получить template страницы регистрации
-     *
-     * @return template страницы
-     */
-    String getRegisterPage();
 
     /**
      * Получить template страницы генерации запроса на восстановление пароля

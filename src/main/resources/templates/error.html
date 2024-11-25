@@ -11,8 +11,8 @@
 <div class="error-container">
   <h1 th:text="${statusCode}">Код ошибки</h1>
   <h2>
-    <span th:if="${statusCode == 404}">Страница не найдена</span>
     <span th:if="${statusCode == 403}">Введены неправильные данные</span>
+    <span th:if="${statusCode == 404}">Страница не найдена</span>
     <span th:if="${statusCode >= 500 and statusCode < 600}">Внутренняя ошибка сервера</span>
     <span th:if="${statusCode < 400 or statusCode >= 600}">Что-то пошло не так</span>
   </h2>

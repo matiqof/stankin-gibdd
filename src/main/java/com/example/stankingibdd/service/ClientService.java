@@ -7,18 +7,12 @@ import com.example.stankingibdd.model.ResetPasswordRequest;
 public interface ClientService {
 
     /**
-     * Регистрация клиента
-     *
-     * @param clientDto модель клиента {@link ClientDto}
-     */
-    void registerClient(ClientDto clientDto);
-
-    /**
      * Генерация информации для восстановления пароля пользователя
      *
      * @param request модель запроса на восстановление пароля {@link ForgotPasswordRequest}
+     * @param isFromProfile true/false в зависимости откуда пришел запроса, из профиля/логина
      */
-    void forgotPassword(ForgotPasswordRequest request);
+    void forgotPassword(ForgotPasswordRequest request, boolean isFromProfile);
 
     /**
      * Генерация информации для восстановления пароля пользователя

@@ -9,9 +9,16 @@
   <div class="navbar-left">
     <img th:src="@{/images/logo.png}" alt="Логотип" class="logo">
     <a href="/">Главная</a>
+    <a href="/clients">Клиенты</a>
+    <a href="/driving-license">Права</a>
+    <a href="/driving-license-categories">Категории прав</a>
+    <a href="/vehicles">Транспортные средства</a>
+    <a href="/accidents">ДТП</a>
+    <a href="/accident-compositions">Составы ДТП</a>
+    <a href="/fines">Штрафы</a>
   </div>
   <div class="navbar-right">
-    <a href="/profile">Профиль</a>
+    <a href="/profile" th:text="'Профиль (' + ${client.role} + ')'">Профиль</a>
     <a href="/logout">Выйти</a>
   </div>
 </nav>

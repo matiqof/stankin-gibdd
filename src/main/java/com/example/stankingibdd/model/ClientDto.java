@@ -41,5 +41,5 @@ public class ClientDto {
     private int passportDepartmentCode;
 
     @Schema(description = "Роль клиент. По дефолту всегда просто user")
-    private ClientRole role = ClientRole.ROLE_ADMIN;
+    private ClientRole role;
 }

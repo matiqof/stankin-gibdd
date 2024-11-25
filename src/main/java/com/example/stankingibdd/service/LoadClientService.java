@@ -5,7 +5,6 @@ import com.example.stankingibdd.exception.LoginException;
 import com.example.stankingibdd.model.ClientRole;
 import com.example.stankingibdd.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,7 +30,7 @@ public class LoadClientService implements UserDetailsService {
             throw new UsernameNotFoundException(errorMessage);
         }
 
-        if (!ClientRole.ROLE_ADMIN.equals(client.getRole())) {
+        if (ClientRole.ROLE_USER.equals(client.getRole())) {
             final String errorMessage = "Пользователь " + phone + " не является администратором";
 
             log.info(errorMessage);

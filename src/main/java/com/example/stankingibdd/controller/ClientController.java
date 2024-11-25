@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Objects;
 
@@ -25,74 +26,62 @@ public class ClientController {
     private final ViewService viewService;
     private final ClientService clientService;
 
-    @PostMapping("/register")
-    public String register(@ModelAttribute ClientDto clientDto, Model model) {
-        try {
-            clientService.registerClient(clientDto);
-            return "login";
-        } catch (Exception e) {
-            log.error("Ошибка регистрации клиента: " + e);
-            model.addAttribute("error", e.getMessage());
-            return "register";
-        }
-    }
-
     @PostMapping("/forgot-password")
-    public String forgotPassword(@ModelAttribute ForgotPasswordRequest request, Model model) {
+    public String forgotPassword(@ModelAttribute ForgotPasswordRequest request, RedirectAttributes redirectAttributes) {
         try {
-            clientService.forgotPassword(request);
-            return "forgot-password-success";
+            clientService.forgotPassword(request, false);
+            return "redirect:/forgot-password-success";
         } catch (Exception e) {
             log.error("Ошибка создания запроса на сброс пароля клиента: " + e);
-            model.addAllAttributes(PasswordRecoveryAttributes);
-            model.addAttribute("error", e.getMessage());
-            return "forgot-password";
+            redirectAttributes.addAllAttributes(PasswordRecoveryAttributes);
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/forgot-password";
         }
     }
 
     @PostMapping("/reset-password")
-    public String resetPassword(@ModelAttribute ResetPasswordRequest request, Model model) {
+    public String resetPassword(@ModelAttribute ResetPasswordRequest request, RedirectAttributes redirectAttributes) {
         try {
             clientService.resetPassword(request);
-            return "reset-password-success";
+            return "redirect:/reset-password-success";
         } catch (Exception e) {
             log.error("Ошибка сброса пароля клиента: " + e);
             if (Objects.nonNull(request)) {
-                model.addAttribute("error", e.getMessage());
-                model.addAllAttributes(PasswordRecoveryAttributes);
+                redirectAttributes.addAllAttributes(PasswordRecoveryAttributes);
+                redirectAttributes.addFlashAttribute("error", e.getMessage());
                 return "redirect:/reset-password?token=" + request.getToken();
             } else {
-                return "forgot-password";
+                return "redirect:/forgot-password";
             }
         }
     }
 
     @PostMapping("/profile-forgot-password")
-    public String profileForgotPassword(@ModelAttribute ForgotPasswordRequest request, Model model) {
+    public String profileForgotPassword(@ModelAttribute ForgotPasswordRequest request, RedirectAttributes redirectAttributes) {
         try {
-            clientService.forgotPassword(request);
-            return "forgot-password-success";
+            clientService.forgotPassword(request, true);
+            return "redirect:/profile-forgot-password-success";
         } catch (Exception e) {
             log.error("Ошибка создания запроса на сброс пароля клиента: " + e);
-            model.addAllAttributes(profilePasswordRecoveryAttributes);
-            model.addAttribute("error", e.getMessage());
-            return "forgot-password";
+            redirectAttributes.addAllAttributes(profilePasswordRecoveryAttributes);
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/profile-forgot-password";
         }
     }
 
     @PostMapping("/profile-reset-password")
-    public String profileResetPassword(@ModelAttribute ResetPasswordRequest request, Model model) {
+    public String profileResetPassword(@ModelAttribute ResetPasswordRequest request, RedirectAttributes redirectAttributes) {
         try {
             clientService.resetPassword(request);
-            return "reset-password-success";
+            return "redirect:/profile-reset-password-success";
         } catch (Exception e) {
             log.error("Ошибка сброса пароля клиента: " + e);
             if (Objects.nonNull(request)) {
-                model.addAttribute("error", e.getMessage());
-                model.addAllAttributes(profilePasswordRecoveryAttributes);
+                redirectAttributes.addAllAttributes(profilePasswordRecoveryAttributes);
+                redirectAttributes.addFlashAttribute("error", e.getMessage());
                 return "redirect:/profile-reset-password?token=" + request.getToken();
             } else {
-                return "forgot-password";
+                return "redirect:/profile-forgot-password";
             }
         }
     }

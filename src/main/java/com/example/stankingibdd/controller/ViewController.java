@@ -16,18 +16,18 @@ public class ViewController implements ErrorController {
     private final ViewService viewService;
 
     @GetMapping("/")
-    public String index() {
-        return viewService.getIndexPage();
+    public String index(Model model) {
+        return viewService.getIndexPage(model);
+    }
+
+    @GetMapping("/clients")
+    public String clients(Model model) {
+        return viewService.getClientsPage(model);
     }
 
     @GetMapping("/login")
     public String login() {
         return viewService.getLoginPage();
-    }
-
-    @GetMapping("/register")
-    public String register() {
-        return viewService.getRegisterPage();
     }
 
     @GetMapping("/forgot-password")
