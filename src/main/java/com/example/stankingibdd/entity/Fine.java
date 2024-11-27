@@ -22,8 +22,8 @@ public class Fine {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "fine_number", nullable = false, unique = true)
-    private UUID fineNumber;
+    @Column(name = "fine_id", nullable = false, unique = true)
+    private UUID fineId;
 
     @Column(name = "date", nullable = false)
     private Date date;
@@ -47,6 +47,6 @@ public class Fine {
     private String article;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_number", referencedColumnName = "vehicle_number")
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "vehicle_id")
     private Vehicle vehicle;
 }

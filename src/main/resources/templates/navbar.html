@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Навигационный бар</title>
@@ -18,7 +18,7 @@
     <a href="/fines">Штрафы</a>
   </div>
   <div class="navbar-right">
-    <a href="/profile" th:text="'Профиль (' + ${client.role} + ')'">Профиль</a>
+    <a href="/profile" th:text="'Профиль (' + ${currentClient.role} + ')'">Профиль</a>
     <a href="/logout">Выйти</a>
   </div>
 </nav>

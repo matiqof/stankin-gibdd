@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,8 +22,8 @@ public class ViewController implements ErrorController {
     }
 
     @GetMapping("/clients")
-    public String clients(Model model) {
-        return viewService.getClientsPage(model);
+    public String clients(@RequestParam(required = false) String drivingLicenseNumber, Model model) {
+        return viewService.getClientsPage(drivingLicenseNumber, model);
     }
 
     @GetMapping("/login")

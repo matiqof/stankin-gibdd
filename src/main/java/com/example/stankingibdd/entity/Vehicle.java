@@ -25,8 +25,8 @@ public class Vehicle {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "vehicle_number", nullable = false, unique = true)
-    private UUID vehicleNumber;
+    @Column(name = "vehicle_id", nullable = false, unique = true)
+    private UUID vehicleId;
 
     @Column(name = "model", nullable = false)
     private String model;
@@ -59,7 +59,7 @@ public class Vehicle {
     private String registrationLocation;
 
     @ManyToOne
-    @JoinColumn(name = "client_number", referencedColumnName = "client_number")
+    @JoinColumn(name = "client_id", referencedColumnName = "client_id")
     private Client client;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)

@@ -13,8 +13,8 @@ import java.util.Objects;
 public abstract class ClientMapper {
 
     @Mapping(target = "clientPassword", ignore = true)
-    @Mapping(target = "clientNumber", ignore = true)
-    @Mapping(target = "licenseNumber", ignore = true)
+    @Mapping(target = "clientId", ignore = true)
+    @Mapping(target = "licenseId", ignore = true)
     @Mapping(target = "drivingLicense", ignore = true)
     @Mapping(target = "vehicles", ignore = true)
     public abstract Client map(ClientDto source);
@@ -34,8 +34,8 @@ public abstract class ClientMapper {
             if (StringUtils.hasLength(external.getAddress())) {
                 source.setAddress(external.getAddress());
             }
-            if (StringUtils.hasLength(external.getPassport())) {
-                source.setPassport(external.getPassport());
+            if (StringUtils.hasLength(external.getPassportNumber())) {
+                source.setPassportNumber(external.getPassportNumber());
             }
             if (Objects.nonNull(external.getPassportIssueDate())) {
                 source.setPassportIssueDate(external.getPassportIssueDate());

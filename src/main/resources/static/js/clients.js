@@ -5,9 +5,10 @@ function showAddClientForm() {
     document.getElementById('phone').removeAttribute("readonly");
     document.getElementById('clientPassword').removeAttribute("readonly");
     clearFormFields();
+    updatePasswordFieldRequired();
 }
 
-function editClient(phone, clientPassword, fullName, dateOfBirth, address, passport, passportIssueDate, passportDepartmentCode, role) {
+function editClient(phone, clientPassword, fullName, dateOfBirth, address, passportNumber, passportIssueDate, passportDepartmentCode, role) {
     document.getElementById('clientModal').style.display = 'flex';
     document.getElementById('modalTitle').innerText = 'Редактировать клиента';
     document.getElementById('clientForm').action = '/client/edit';
@@ -18,10 +19,11 @@ function editClient(phone, clientPassword, fullName, dateOfBirth, address, passp
     document.getElementById('fullName').value = fullName;
     document.getElementById('dateOfBirth').value = dateOfBirth;
     document.getElementById('address').value = address;
-    document.getElementById('passport').value = passport;
+    document.getElementById('passportNumber').value = passportNumber;
     document.getElementById('passportIssueDate').value = passportIssueDate;
     document.getElementById('passportDepartmentCode').value = passportDepartmentCode;
     document.getElementById('role').value = role;
+    updatePasswordFieldRequired();
 }
 
 function hideClientModal() {
@@ -36,7 +38,7 @@ function clearFormFields() {
     document.getElementById('fullName').value = '';
     document.getElementById('dateOfBirth').value = '';
     document.getElementById('address').value = '';
-    document.getElementById('passport').value = '';
+    document.getElementById('passportNumber').value = '';
     document.getElementById('passportIssueDate').value = '';
     document.getElementById('passportDepartmentCode').value = '';
     document.getElementById('role').value = '';
@@ -83,3 +85,16 @@ function sortClients() {
         }
     }
 }
+
+function updatePasswordFieldRequired() {
+    const role = document.getElementById('role').value;
+    const clientPassword = document.getElementById('clientPassword');
+
+    if (role === 'ROLE_USER') {
+        clientPassword.removeAttribute('required');
+    } else {
+        clientPassword.setAttribute('required', 'required');
+    }
+}
+
+document.getElementById('role').addEventListener('change', updatePasswordFieldRequired);

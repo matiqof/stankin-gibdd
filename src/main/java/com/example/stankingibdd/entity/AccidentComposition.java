@@ -21,17 +21,17 @@ public class AccidentComposition {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "accident_number", nullable = false, unique = true)
-    private UUID accidentNumber;
+    @Column(name = "accident_id", nullable = false, unique = true)
+    private UUID accidentId;
 
-    @Column(name = "vehicle_number", nullable = false)
-    private UUID vehicleNumber;
+    @Column(name = "vehicle_id", nullable = false)
+    private UUID vehicleId;
 
     @ManyToOne
-    @JoinColumn(name = "accident_number", referencedColumnName = "accident_number", insertable = false, updatable = false)
+    @JoinColumn(name = "accident_id", referencedColumnName = "accident_id", insertable = false, updatable = false)
     private Accident accident;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_number", referencedColumnName = "vehicle_number", insertable = false, updatable = false)
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "vehicle_id", insertable = false, updatable = false)
     private Vehicle vehicle;
 }

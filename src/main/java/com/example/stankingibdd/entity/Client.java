@@ -39,11 +39,11 @@ public class Client implements UserDetails {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "client_number", nullable = false, unique = true)
-    private UUID clientNumber;
+    @Column(name = "client_id", nullable = false, unique = true)
+    private UUID clientId;
 
-    @Column(name = "license_number")
-    private UUID licenseNumber;
+    @Column(name = "license_id")
+    private UUID licenseId;
 
     @Column(name = "full_name", nullable = false)
     private String fullName;
@@ -57,8 +57,8 @@ public class Client implements UserDetails {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "passport", nullable = false, length = 10, unique = true)
-    private String passport;
+    @Column(name = "passport_number", nullable = false, length = 10, unique = true)
+    private String passportNumber;
 
     @Column(name = "passport_issue_date", nullable = false)
     private Date passportIssueDate;

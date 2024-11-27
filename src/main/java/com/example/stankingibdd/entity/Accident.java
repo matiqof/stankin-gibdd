@@ -23,8 +23,8 @@ public class Accident {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "accident_number", nullable = false, unique = true)
-    private UUID accidentNumber;
+    @Column(name = "accident_id", nullable = false, unique = true)
+    private UUID accidentId;
 
     @Column(name = "time", nullable = false)
     private Date time;

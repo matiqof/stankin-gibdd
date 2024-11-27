@@ -122,10 +122,10 @@ public class ClientServiceImpl implements ClientService {
         }
 
         Client clientFromDb = clientRepository.findByPhone(phone);
-        String passport = clientDto.getPassport();
-        if (!clientFromDb.getPassport().equals(passport)
-                && clientRepository.existsClientByPassport(passport)) {
-            final String errorMessage = "Клиент с паспортом " + passport +  " уже существует";
+        String passportNumber = clientDto.getPassportNumber();
+        if (!clientFromDb.getPassportNumber().equals(passportNumber)
+                && clientRepository.existsClientByPassportNumber(passportNumber)) {
+            final String errorMessage = "Клиент с паспортом " + passportNumber +  " уже существует";
             throw new EditTablesException(errorMessage);
         }
 
@@ -155,7 +155,7 @@ public class ClientServiceImpl implements ClientService {
             originalClient.setFullName(client.getFullName());
             originalClient.setDateOfBirth(client.getDateOfBirth());
             originalClient.setAddress(client.getAddress());
-            originalClient.setPassport(client.getPassport());
+            originalClient.setPassportNumber(client.getPassportNumber());
             originalClient.setPassportIssueDate(client.getPassportIssueDate());
             originalClient.setPassportDepartmentCode(client.getPassportDepartmentCode());
         }

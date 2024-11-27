@@ -5,9 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface ClientRepository extends JpaRepository<Client, Integer> {
+import java.util.UUID;
+
+@Repository
+public interface ClientRepository extends JpaRepository<Client, UUID> {
 
     /**
      * Найти клиента по телефону
@@ -32,12 +36,12 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
     /**
      * Проверить существует ли клиент с таким паспортом
      *
-     * @param passport паспорт
+     * @param passportNumber паспорт
      * @return true/false в зависимости от того, существует ли такой клиент
      */
     @Transactional
-    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Client c WHERE c.passport = :passport")
-    boolean existsClientByPassport(@Param("passport") String passport);
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Client c WHERE c.passportNumber = :passportNumber")
+    boolean existsClientByPassportNumber(@Param("passportNumber") String passportNumber);
 
     /**
      * Удалить клиента по телефону

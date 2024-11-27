@@ -41,6 +41,13 @@ public class SecurityConfig {
                         .requestMatchers("/profile-forgot-password-success").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
                         .requestMatchers("/profile-reset-password").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
                         .requestMatchers("/profile-reset-password-success").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
+                        .requestMatchers("/clients").hasRole(ROLE_ADMIN)
+                        .requestMatchers("/driving-license").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR)
+                        .requestMatchers("/driving-license-categories").hasAnyRole(ROLE_ADMIN)
+                        .requestMatchers("/vehicles").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
+                        .requestMatchers("/accidents").hasAnyRole(ROLE_ADMIN, ROLE_INSPECTOR)
+                        .requestMatchers("/accident-compositions").hasAnyRole(ROLE_ADMIN, ROLE_INSPECTOR)
+                        .requestMatchers("/fines").hasAnyRole(ROLE_ADMIN, ROLE_INSPECTOR, ROLE_SYSTEM)
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

@@ -8,6 +8,7 @@ public interface ViewService {
     /**
      * Получить template главной страницы
      *
+     * @param model модель для отправки на ui {@link Model}
      * @return template страницы
      */
     String getIndexPage(Model model);
@@ -15,9 +16,11 @@ public interface ViewService {
     /**
      * Получить template страницы управления таблицей клиентов
      *
+     * @param model модель для отправки на ui {@link Model}
+     * @param drivingLicenseNumber фильтр по номеру ВУ для списка клиентов
      * @return template страницы
      */
-    String getClientsPage(Model model);
+    String getClientsPage(String drivingLicenseNumber, Model model);
 
 
     /**

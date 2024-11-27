@@ -4,6 +4,7 @@ import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.exception.EditTablesException;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.model.ClientDto;
+import com.example.stankingibdd.model.ClientRole;
 import com.example.stankingibdd.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,9 +35,18 @@ public class EditTablesServiceImpl implements EditTablesService {
             throw new EditTablesException(errorMessage);
         }
 
-        String passport = clientDto.getPassport();
-        if (clientRepository.existsClientByPassport(passport)) {
-            final String errorMessage = "Клиент с паспортом " + passport + ", который уже существует";
+        String passportNumber = clientDto.getPassportNumber();
+        if (clientRepository.existsClientByPassportNumber(passportNumber)) {
+            final String errorMessage = "Клиент с паспортом " + passportNumber + ", который уже существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        ClientRole clientRole = clientDto.getRole();
+        String clientPassword = clientDto.getClientPassword();
+        if (Objects.nonNull(clientRole)
+                && !ClientRole.ROLE_USER.equals(clientRole)
+                && !StringUtils.hasLength(clientPassword)) {
+            final String errorMessage = "У клиента с управляющей ролью должен быть пароль";
             throw new EditTablesException(errorMessage);
         }
 

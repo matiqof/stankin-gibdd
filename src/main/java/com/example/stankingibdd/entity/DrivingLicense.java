@@ -9,14 +9,22 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 @Entity
+@Builder
 @Table(name = "driving_license")
+@NoArgsConstructor
+@AllArgsConstructor
 public class DrivingLicense {
 
     @Id
@@ -25,8 +33,11 @@ public class DrivingLicense {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "license_number", nullable = false, unique = true)
-    private UUID licenseNumber;
+    @Column(name = "license_id", nullable = false, unique = true)
+    private UUID licenseId;
+
+    @Column(name = "license_number", nullable = false)
+    private String licenseNumber;
 
     @Column(name = "issue_date", nullable = false)
     private Date issueDate;
@@ -38,7 +49,7 @@ public class DrivingLicense {
     private String departmentCode;
 
     @OneToOne
-    @JoinColumn(name = "client_number", referencedColumnName = "client_number")
+    @JoinColumn(name = "client_id", referencedColumnName = "client_id")
     private Client client;
 
     @OneToMany(mappedBy = "drivingLicense", cascade = CascadeType.ALL)

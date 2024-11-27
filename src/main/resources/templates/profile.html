@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Профиль клиента</title>
@@ -18,31 +18,31 @@
     <div class="form-row">
       <div class="form-group">
         <label for="fullName">ФИО:<span class="required">*</span></label>
-        <input type="text" id="fullName" name="fullName" th:value="${client.fullName}" maxlength="255" required>
+        <input type="text" id="fullName" name="fullName" th:value="${currentClient.fullName}" maxlength="255" required>
       </div>
       <div class="form-group">
         <label for="dateOfBirth">Дата рождения:<span class="required">*</span></label>
-        <input type="date" id="dateOfBirth" name="dateOfBirth" th:value="${#dates.format(client.dateOfBirth, 'yyyy-MM-dd')}" required>
+        <input type="date" id="dateOfBirth" name="dateOfBirth" th:value="${#dates.format(currentClient.dateOfBirth, 'yyyy-MM-dd')}" required>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label for="address">Адрес проживания:<span class="required">*</span></label>
-        <input type="text" id="address" name="address" th:value="${client.address}" maxlength="255" required>
+        <input type="text" id="address" name="address" th:value="${currentClient.address}" maxlength="255" required>
       </div>
       <div class="form-group">
-        <label for="passport">Паспорт:<span class="required">*</span></label>
-        <input type="text" id="passport" name="passport" th:value="${client.passport}" maxlength="10" required>
+        <label for="passportNumber">Паспорт:<span class="required">*</span></label>
+        <input type="text" id="passportNumber" name="passportNumber" th:value="${currentClient.passportNumber}" maxlength="10" required>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label for="passportIssueDate">Дата выдачи паспорта:<span class="required">*</span></label>
-        <input type="date" id="passportIssueDate" name="passportIssueDate" th:value="${#dates.format(client.passportIssueDate, 'yyyy-MM-dd')}" required>
+        <input type="date" id="passportIssueDate" name="passportIssueDate" th:value="${#dates.format(currentClient.passportIssueDate, 'yyyy-MM-dd')}" required>
       </div>
       <div class="form-group">
         <label for="passportDepartmentCode">Код подразделения паспорта:<span class="required">*</span></label>
-        <input type="number" id="passportDepartmentCode" name="passportDepartmentCode" th:value="${client.passportDepartmentCode}" required>
+        <input type="number" id="passportDepartmentCode" name="passportDepartmentCode" th:value="${currentClient.passportDepartmentCode}" required>
       </div>
     </div>
     <div>

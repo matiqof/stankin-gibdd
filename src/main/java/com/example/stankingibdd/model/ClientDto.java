@@ -31,7 +31,7 @@ public class ClientDto {
     private String address;
 
     @Schema(description = "Паспорт")
-    private String passport;
+    private String passportNumber;
 
     @Schema(description = "Дата выдачи паспорта")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -40,6 +40,9 @@ public class ClientDto {
     @Schema(description = "Код подразделения паспорта")
     private int passportDepartmentCode;
 
-    @Schema(description = "Роль клиент. По дефолту всегда просто user")
+    @Schema(description = "Роль клиент. По умолчанию всегда ROLE_USER")
     private ClientRole role;
+
+    @Schema(description = "Номер водительского удостоверения")
+    private String licenseNumber;
 }

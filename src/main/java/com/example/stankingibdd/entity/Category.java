@@ -22,8 +22,8 @@ public class Category {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "category_number", nullable = false, unique = true)
-    private UUID categoryNumber;
+    @Column(name = "category_id", nullable = false, unique = true)
+    private UUID categoryId;
 
     @Column(name = "category_name", nullable = false, length = 3)
     private String categoryName;

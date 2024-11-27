@@ -1,5 +1,7 @@
 package com.example.stankingibdd.service;
 
+import com.example.stankingibdd.entity.Client;
+import com.example.stankingibdd.entity.DrivingLicense;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.repository.ClientRepository;
@@ -8,9 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.example.stankingibdd.util.ControllersStaticData.PasswordRecoveryAttributes;
 import static com.example.stankingibdd.util.ControllersStaticData.profilePasswordRecoveryAttributes;
@@ -24,19 +29,41 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     public String getIndexPage(Model model) {
-        model.addAttribute("client", SecurityContextHolder.getContext()
+        model.addAttribute("currentClient", SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal());
+
         return "index";
     }
 
     @Override
-    public String getClientsPage(Model model) {
-        List<ClientDto> clientDtoList = clientMapper.map(clientRepository.findAll());
-        model.addAttribute("clients", clientDtoList);
-        model.addAttribute("client", SecurityContextHolder.getContext()
+    public String getClientsPage(String drivingLicenseNumber, Model model) {
+        Client currentClient = (Client) SecurityContextHolder.getContext()
                 .getAuthentication()
-                .getPrincipal());
+                .getPrincipal();
+        List<Client> clientList = (StringUtils.hasLength(drivingLicenseNumber)) ? clientRepository.findAll().stream()
+                .filter(client -> {
+                    if (Objects.nonNull(client.getDrivingLicense())) {
+                        return drivingLicenseNumber.equals(client.getDrivingLicense().getLicenseNumber());
+                    }
+
+                    return false;
+                }).toList() : clientRepository.findAll();
+        Map<String, DrivingLicense> drivingLicenseByPhoneMap = clientList.stream()
+                .filter(client -> Objects.nonNull(client.getDrivingLicense()))
+                .collect(Collectors.toMap(Client::getPhone, Client::getDrivingLicense));
+        List<ClientDto> clientDtoList = clientMapper.map(clientList).stream()
+                .filter(clientDto -> !currentClient.getPhone().equals(clientDto.getPhone()))
+                .peek(clientDto -> {
+                    DrivingLicense drivingLicense = drivingLicenseByPhoneMap.get(clientDto.getPhone());
+                    if (Objects.nonNull(drivingLicense)) {
+                        clientDto.setLicenseNumber(drivingLicense.getLicenseNumber());
+                    }
+                })
+                .toList();
+
+        model.addAttribute("clients", clientDtoList);
+        model.addAttribute("currentClient", currentClient);
         return "clients";
     }
 
@@ -73,9 +100,10 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     public String getProfilePage(Model model) {
-        model.addAttribute("client", SecurityContextHolder.getContext()
+        model.addAttribute("currentClient", SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal());
+
         return "profile";
     }
 

@@ -30,8 +30,8 @@ public class PasswordResetToken {
         name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "password_reset_token_number", nullable = false, unique = true)
-    private UUID password_reset_token_number;
+    @Column(name = "password_reset_token_id", nullable = false, unique = true)
+    private UUID password_reset_token_id;
 
     @Column(name = "token", nullable = false, unique = true)
     private UUID token;
@@ -40,7 +40,7 @@ public class PasswordResetToken {
     private Date expiryDate;
 
     @OneToOne
-    @JoinColumn(name = "client_number", referencedColumnName = "client_number")
+    @JoinColumn(name = "client_id", referencedColumnName = "client_id")
     private Client client;
 
     public boolean isExpired() {

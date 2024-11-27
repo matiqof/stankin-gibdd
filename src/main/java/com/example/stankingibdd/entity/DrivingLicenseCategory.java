@@ -21,17 +21,17 @@ public class DrivingLicenseCategory {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "license_number", nullable = false, unique = true)
-    private UUID licenseNumber;
+    @Column(name = "license_id", nullable = false, unique = true)
+    private UUID licenseId;
 
-    @Column(name = "category_number", nullable = false)
-    private int categoryNumber;
+    @Column(name = "category_id", nullable = false)
+    private int categoryId;
 
     @ManyToOne
-    @JoinColumn(name = "license_number", referencedColumnName = "license_number", insertable = false, updatable = false)
+    @JoinColumn(name = "license_id", referencedColumnName = "license_id", insertable = false, updatable = false)
     private DrivingLicense drivingLicense;
 
     @ManyToOne
-    @JoinColumn(name = "category_number", referencedColumnName = "category_number", insertable = false, updatable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id", insertable = false, updatable = false)
     private Category category;
 }
