@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Управление таблицей ВУ</title>
+  <link rel="icon" th:href="@{/images/logo.png}" type="image/x-icon">
+  <link rel="stylesheet" th:href="@{/css/clients.css}">
+  <link rel="stylesheet" th:href="@{/css/body.css}">
+  <link rel="stylesheet" th:href="@{/css/navbar.css}">
+</head>
+<body>
+<div th:insert="~{navbar :: navbar}"></div>
+<div class="container">
+  <div class="header-with-sort">
+    <h2>Список водительских удостоверений</h2>
+    <form class="sort-form">
+      <input type="text" id="searchQuery" placeholder="Введите текст для поиска">
+      <button type="button" onclick="sortClients()">Сортировать</button>
+    </form>
+  </div>
+  <div class="table-container">
+    <table id="clientsTable" class="table-wrapper">
+      <thead>
+      <tr>
+        <th>Номер удостоверения</th>
+        <th>Дата получения</th>
+        <th>Дата истечения срока</th>
+        <th>Код подразделения</th>
+        <th>Телефон клиента</th>
+        <th>Действия</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="drivingLicense : ${drivingLicenses}" th:id="'drivingLicense-' + ${drivingLicense.licenseNumber}">
+        <td th:text="${drivingLicense.licenseNumber}"></td>
+        <td th:text="${#dates.format(drivingLicense.issueDate, 'yyyy-MM-dd')}"></td>
+        <td th:text="${#dates.format(drivingLicense.expirationDate, 'yyyy-MM-dd')}"></td>
+        <td th:text="${drivingLicense.departmentCode}"></td>
+        <td>
+          <a th:href="@{/clients(drivingLicenseNumber=${drivingLicense.licenseNumber})}" class="license-number">
+            <span th:text="${drivingLicense.phone}"></span>
+          </a>
+        </td>
+        <td>
+          <button class="edit-button" th:attr="onclick='editDrivingLicense(\'' + ${drivingLicense.licenseNumber} + '\', \'' + ${#dates.format(drivingLicense.issueDate, 'yyyy-MM-dd')} + '\', \'' + ${#dates.format(drivingLicense.expirationDate, 'yyyy-MM-dd')} + '\', \'' + ${drivingLicense.departmentCode} + '\', \'' + ${drivingLicense.phone} + '\')'">Редактировать</button>
+          <form th:action="@{/driving-license/delete}" method="post" style="display: inline;">
+            <input type="hidden" name="licenseNumber" th:value="${drivingLicense.licenseNumber}">
+            <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+              <img th:src="@{/images/delete.png}" alt="Delete" class="delete-icon">
+            </button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="button-container">
+    <button onclick="showAddDrivingLicenseForm()">Добавить водительское удостоверение</button>
+    <a href="/driving-licenses">Обновить данные</a>
+  </div>
+
+  <div id="drivingLicenseModal" class="modal modal-none-display">
+    <div id="drivingLicenseModalContent" class="modal-content main-container">
+      <span onclick="hideDrivingLicenseModal()" class="close">&times;</span>
+      <h3 id="modalTitle">Добавить нового клиента</h3>
+      <form id="drivingLicenseForm" method="post">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="licenseNumber">Номер удостоверения:<span class="required">*</span></label>
+            <input type="text" maxlength="10" id="licenseNumber" name="licenseNumber" required>
+          </div>
+          <div class="form-group">
+            <label for="issueDate">Дата получения удостоверения:<span class="required">*</span></label>
+            <input type="date" id="issueDate" name="issueDate" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="expirationDate">Дата истечения срока действия:<span class="required">*</span></label>
+            <input type="date" id="expirationDate" name="expirationDate" required>
+          </div>
+          <div class="form-group">
+            <label for="departmentCode">Код подразделения удостоверения:<span class="required">*</span></label>
+            <input type="text" maxlength="10" id="departmentCode" name="departmentCode" required>
+          </div>
+        </div>
+        <div class="form-role-row">
+          <div class="form-role-group">
+            <label for="phone">Телефон клиента:<span class="required">*</span></label>
+            <input type="text" maxlength="10" id="phone" name="phone" required>
+          </div>
+        </div>
+        <div class="button-row">
+          <button class="modal-button" type="submit">Сохранить</button>
+          <button type="button" onclick="hideDrivingLicenseModal()" class="modal-button">Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="infoModal" class="modal modal-flex-display" th:if="${successSaveData != null || errorSaveData != null}">
+  <div id="infoModalContent" class="modal-content main-container">
+    <span onclick="hideInfoModal()" class="close">&times;</span>
+    <img th:if="${successSaveData}" th:src="@{/images/success.png}"  alt="Успех" class="success-image">
+    <img th:if="${errorSaveData}" th:src="@{/images/unsuccess.png}"  alt="Неудача" class="unsuccess-image">
+    <p th:if="${successSaveData}" th:text="${successSaveData}">Сообщение об успешном сохранении</p>
+    <p th:if="${errorSaveData}" th:text="${errorSaveData}">Сообщение об ошибке</p>
+    <button onclick="hideInfoModal()" class="modal-button">Закрыть</button>
+  </div>
+</div>
+
+<script th:src="@{/js/driving-licenses.js}"></script>
+</body>
+</html>

@@ -44,7 +44,11 @@
         <td th:text="${#dates.format(client.passportIssueDate, 'yyyy-MM-dd')}"></td>
         <td th:text="${client.passportDepartmentCode}"></td>
         <td th:text="${client.role}"></td>
-        <td th:text="${client.licenseNumber}"></td>
+        <td>
+          <a th:href="@{/driving-licenses(phone=${client.phone})}" class="license-number">
+            <span th:text="${client.licenseNumber}"></span>
+          </a>
+        </td>
         <td>
           <button class="edit-button" th:attr="onclick='editClient(\'' + ${client.phone} + '\', \'' + ${client.clientPassword} + '\', \'' + ${client.fullName} + '\', \'' + ${#dates.format(client.dateOfBirth, 'yyyy-MM-dd')} + '\', \'' + ${client.address} + '\', \'' + ${client.passportNumber} + '\', \'' + ${#dates.format(client.passportIssueDate, 'yyyy-MM-dd')} + '\', ' + ${client.passportDepartmentCode} + ', \'' + ${client.role} + '\')'">Редактировать</button>
           <form th:action="@{/client/delete}" method="post" style="display: inline;">
@@ -71,8 +75,8 @@
       <form id="clientForm" method="post">
         <div class="form-row">
           <div class="form-group">
-            <label for="phone">Телефон:</label>
-            <input type="text" maxlength="11" id="phone" name="phone" required>
+            <label for="phone">Телефон:<span class="required">*</span></label>
+            <input type="text" maxlength="10" id="phone" name="phone" required>
           </div>
           <div class="form-group">
             <label for="clientPassword">Пароль:</label>

@@ -26,6 +26,11 @@ public class ViewController implements ErrorController {
         return viewService.getClientsPage(drivingLicenseNumber, model);
     }
 
+    @GetMapping("/driving-licenses")
+    public String drivingLicenses(@RequestParam(required = false) String phone, Model model) {
+        return viewService.getDrivingLicensesPage(phone, model);
+    }
+
     @GetMapping("/login")
     public String login() {
         return viewService.getLoginPage();

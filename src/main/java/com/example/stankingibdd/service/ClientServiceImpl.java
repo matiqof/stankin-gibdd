@@ -17,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -116,12 +115,12 @@ public class ClientServiceImpl implements ClientService {
         }
 
         String phone = clientDto.getPhone();
-        if (!StringUtils.hasLength(phone)) {
-            final String errorMessage = "Невозможно сохранить изменения клиента с пустым телефоном";
+        Client clientFromDb = clientRepository.findByPhone(phone);
+        if (Objects.isNull(clientFromDb)) {
+            final String errorMessage = "Клиента с телефоном " + phone + " не существует";
             throw new EditTablesException(errorMessage);
         }
 
-        Client clientFromDb = clientRepository.findByPhone(phone);
         String passportNumber = clientDto.getPassportNumber();
         if (!clientFromDb.getPassportNumber().equals(passportNumber)
                 && clientRepository.existsClientByPassportNumber(passportNumber)) {
@@ -158,6 +157,7 @@ public class ClientServiceImpl implements ClientService {
             originalClient.setPassportNumber(client.getPassportNumber());
             originalClient.setPassportIssueDate(client.getPassportIssueDate());
             originalClient.setPassportDepartmentCode(client.getPassportDepartmentCode());
+            originalClient.setRole(client.getRole());
         }
     }
 }

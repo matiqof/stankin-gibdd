@@ -1,6 +1,7 @@
 package com.example.stankingibdd.controller;
 
 import com.example.stankingibdd.model.ClientDto;
+import com.example.stankingibdd.model.DrivingLicenseDto;
 import com.example.stankingibdd.service.EditTablesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,5 +55,44 @@ public class EditTablesController {
         }
 
         return "redirect:/clients";
+    }
+
+    @PostMapping("/driving-license/add")
+    public String addDrivingLicense(@ModelAttribute DrivingLicenseDto drivingLicenseDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.addDrivingLicense(drivingLicenseDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное добавление нового водительского удостоверения!");
+        } catch (Exception e) {
+            log.error("Ошибка сохранения нового клиента: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить добавление нового водительского удостоверения из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/driving-licenses";
+    }
+
+    @PostMapping("/driving-license/edit")
+    public String editDrivingLicense(@ModelAttribute DrivingLicenseDto drivingLicenseDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.editDrivingLicense(drivingLicenseDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное изменение водительского удостоверения!");
+        } catch (Exception e) {
+            log.error("Ошибка изменения клиента: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить изменение водительского удостоверения из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/driving-licenses";
+    }
+
+    @PostMapping("/driving-license/delete")
+    public String editDrivingLicense(@RequestParam String licenseNumber, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.deleteDrivingLicense(licenseNumber);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнение успешное удаление водительского удостоверения!");
+        } catch (Exception e) {
+            log.error("Ошибка удаления клиента: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить удаление водительского удостоверения из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/driving-licenses";
     }
 }

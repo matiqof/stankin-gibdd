@@ -19,6 +19,8 @@ public abstract class ClientMapper {
     @Mapping(target = "vehicles", ignore = true)
     public abstract Client map(ClientDto source);
 
+
+    @Mapping(target = "licenseNumber", ignore = true)
     public abstract ClientDto map(Client source);
 
     public abstract List<ClientDto> map(List<Client> source);
@@ -42,6 +44,9 @@ public abstract class ClientMapper {
             }
             if (external.getPassportDepartmentCode() != 0) {
                 source.setPassportDepartmentCode(external.getPassportDepartmentCode());
+            }
+            if (Objects.nonNull(external.getRole()) && StringUtils.hasLength(external.getRole().name())) {
+                source.setRole(external.getRole());
             }
         }
 

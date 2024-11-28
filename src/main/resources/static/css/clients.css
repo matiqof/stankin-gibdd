@@ -339,6 +339,11 @@ body {
     background-color: #2ea043;
 }
 
+.license-number {
+    text-decoration: none;
+    color: #c9d1d9;
+}
+
 @keyframes fadeIn {
     from {opacity: 0;}
     to {opacity: 1;}

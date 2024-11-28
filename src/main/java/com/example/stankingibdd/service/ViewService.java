@@ -22,6 +22,15 @@ public interface ViewService {
      */
     String getClientsPage(String drivingLicenseNumber, Model model);
 
+    /**
+     * Получить template страницы управления таблицей водительских удостоверений
+     *
+     * @param model модель для отправки на ui {@link Model}
+     * @param phone фильтр по телефона клиента для списка ВУ
+     * @return template страницы
+     */
+    String getDrivingLicensesPage(String phone, Model model);
+
 
     /**
      * Получить template страницы входа

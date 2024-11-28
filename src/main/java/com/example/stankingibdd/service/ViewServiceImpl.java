@@ -3,8 +3,11 @@ package com.example.stankingibdd.service;
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
 import com.example.stankingibdd.mapper.ClientMapper;
+import com.example.stankingibdd.mapper.DrivingLicenseMapper;
 import com.example.stankingibdd.model.ClientDto;
+import com.example.stankingibdd.model.DrivingLicenseDto;
 import com.example.stankingibdd.repository.ClientRepository;
+import com.example.stankingibdd.repository.DrivingLicenseRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +29,9 @@ public class ViewServiceImpl implements ViewService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+
+    private final DrivingLicenseRepository drivingLicenseRepository;
+    private final DrivingLicenseMapper drivingLicenseMapper;
 
     @Override
     public String getIndexPage(Model model) {
@@ -65,6 +71,36 @@ public class ViewServiceImpl implements ViewService {
         model.addAttribute("clients", clientDtoList);
         model.addAttribute("currentClient", currentClient);
         return "clients";
+    }
+
+    @Override
+    public String getDrivingLicensesPage(String phone, Model model) {
+        Client currentClient = (Client) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        List<DrivingLicense> drivingLicenseList = (StringUtils.hasLength(phone)) ? drivingLicenseRepository.findAll().stream()
+                .filter(drivingLicense -> {
+            if (Objects.nonNull(drivingLicense.getClient())) {
+                return phone.equals(drivingLicense.getClient().getPhone());
+            }
+
+            return false;
+        }).toList() : drivingLicenseRepository.findAll();
+
+        Map<String, Client> phoneByLicenseNumberMap = drivingLicenseList.stream()
+                .filter(drivingLicense -> Objects.nonNull(drivingLicense.getClient()))
+                .collect(Collectors.toMap(DrivingLicense::getLicenseNumber,DrivingLicense::getClient));
+        List<DrivingLicenseDto> drivingLicenseDtoList = drivingLicenseMapper.map(drivingLicenseList).stream()
+                .peek(drivingLicenseDto -> {
+            Client client = phoneByLicenseNumberMap.get(drivingLicenseDto.getLicenseNumber());
+            if (Objects.nonNull(client)) {
+                drivingLicenseDto.setPhone(client.getPhone());
+            }
+        }).toList();
+
+        model.addAttribute("drivingLicenses", drivingLicenseDtoList);
+        model.addAttribute("currentClient", currentClient);
+        return "driving-licenses";
     }
 
     @Override

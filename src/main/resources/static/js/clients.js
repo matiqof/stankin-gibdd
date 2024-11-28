@@ -12,8 +12,8 @@ function editClient(phone, clientPassword, fullName, dateOfBirth, address, passp
     document.getElementById('clientModal').style.display = 'flex';
     document.getElementById('modalTitle').innerText = 'Редактировать клиента';
     document.getElementById('clientForm').action = '/client/edit';
-    document.getElementById('phone').readonly = true;
-    document.getElementById('clientPassword').readonly = true;
+    document.getElementById('phone').setAttribute("readonly", "");
+    document.getElementById('clientPassword').setAttribute("readonly", "");
     document.getElementById('phone').value = phone;
     document.getElementById('clientPassword').value = clientPassword;
     document.getElementById('fullName').value = fullName;
@@ -23,7 +23,6 @@ function editClient(phone, clientPassword, fullName, dateOfBirth, address, passp
     document.getElementById('passportIssueDate').value = passportIssueDate;
     document.getElementById('passportDepartmentCode').value = passportDepartmentCode;
     document.getElementById('role').value = role;
-    updatePasswordFieldRequired();
 }
 
 function hideClientModal() {
@@ -90,10 +89,12 @@ function updatePasswordFieldRequired() {
     const role = document.getElementById('role').value;
     const clientPassword = document.getElementById('clientPassword');
 
-    if (role === 'ROLE_USER') {
-        clientPassword.removeAttribute('required');
+    if (role !== '' && role !== 'ROLE_USER') {
+        clientPassword.setAttribute('required', '');
+        clientPassword.removeAttribute('readonly');
     } else {
-        clientPassword.setAttribute('required', 'required');
+        clientPassword.removeAttribute('required');
+        clientPassword.setAttribute('readonly', '');
     }
 }
 

@@ -7,6 +7,7 @@ import com.example.stankingibdd.service.ClientService;
 import com.example.stankingibdd.service.ViewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -89,6 +90,8 @@ public class ClientController {
     @PostMapping("/profile")
     public String profile(@ModelAttribute ClientDto clientDto, Model model) {
         try {
+            clientDto.setPhone(SecurityContextHolder.getContext().getAuthentication().getName());
+
             clientService.saveClient(clientDto);
             model.addAttribute("successSaveClient", true);
         } catch (Exception e) {
