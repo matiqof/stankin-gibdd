@@ -43,7 +43,7 @@ public interface DrivingLicenseRepository extends JpaRepository<DrivingLicense, 
      */
     @Transactional
     @Query("SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END FROM DrivingLicense d WHERE d.licenseNumber = :licenseNumber")
-    boolean existsClientByLicenseNumber(@Param("licenseNumber") String licenseNumber);
+    boolean existsDrivingLicenseByLicenseNumber(@Param("licenseNumber") String licenseNumber);
 
     /**
      * Удалить водительское удостоверение по номеру

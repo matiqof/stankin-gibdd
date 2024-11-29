@@ -185,14 +185,14 @@ body {
     text-align: left;
 }
 
-.form-group label, .form-role-group label {
+.form-group label, .form-inline-group label {
     display: block;
     margin-bottom: 5px;
     color: #c9d1d9;
     font-size: 14px;
 }
 
-.form-group input, .form-role-group input, .sort-form input {
+.form-group input, .form-inline-group input, .sort-form input {
     width: 100%;
     padding: 10px;
     border: 1px solid #21262d;
@@ -207,12 +207,12 @@ body {
     color: #6e7681;
 }
 
-.form-group input:focus, .form-role-group input:focus, .sort-form input:focus {
+.form-group input:focus, .form-inline-group input:focus, .sort-form input:focus {
     border-color: #58a6ff;
     outline: none;
 }
 
-.form-group select, .form-role-group select {
+.form-group select, .form-inline-group select {
     width: 100%;
     padding: 10px;
     border: 1px solid #21262d;
@@ -223,7 +223,7 @@ body {
     font-size: 14px;
 }
 
-.form-group select:focus, .form-role-group select:focus {
+.form-group select:focus, .form-inline-group select:focus {
     border-color: #58a6ff;
     outline: none;
 }
@@ -275,13 +275,13 @@ body {
     margin-top: 20px;
 }
 
-.form-role-row {
+.form-inline-row {
     display: flex;
     justify-content: center;
     margin-bottom: 15px;
 }
 
-.form-role-group {
+.form-inline-group {
     width: 100%;
     text-align: left;
 }
@@ -292,6 +292,13 @@ body {
     height: 28px;
     vertical-align: middle;
     margin-left: 10px;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
 }
 
 .success-image {
@@ -339,7 +346,7 @@ body {
     background-color: #2ea043;
 }
 
-.license-number {
+.hidden-redirect-button {
     text-decoration: none;
     color: #c9d1d9;
 }

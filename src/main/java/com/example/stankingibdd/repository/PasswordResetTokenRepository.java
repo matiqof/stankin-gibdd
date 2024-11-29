@@ -14,7 +14,7 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
      * Получить запись по токену
      *
      * @param token токен
-     * @return запись
+     * @return запись типа {@link PasswordResetToken}
      */
     @Query("SELECT prt FROM PasswordResetToken prt WHERE prt.token = :token")
     PasswordResetToken findByToken(@Param("token") UUID token);

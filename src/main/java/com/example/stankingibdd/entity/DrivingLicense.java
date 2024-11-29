@@ -22,9 +22,9 @@ import java.util.UUID;
 @Data
 @Entity
 @Builder
-@Table(name = "driving_license")
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "driving_license")
 public class DrivingLicense {
 
     @Id

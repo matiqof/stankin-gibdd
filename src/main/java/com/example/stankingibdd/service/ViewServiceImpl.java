@@ -4,7 +4,9 @@ import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.mapper.DrivingLicenseMapper;
+import com.example.stankingibdd.model.CategoryType;
 import com.example.stankingibdd.model.ClientDto;
+import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
 import com.example.stankingibdd.repository.ClientRepository;
 import com.example.stankingibdd.repository.DrivingLicenseRepository;
@@ -13,8 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -101,6 +105,36 @@ public class ViewServiceImpl implements ViewService {
         model.addAttribute("drivingLicenses", drivingLicenseDtoList);
         model.addAttribute("currentClient", currentClient);
         return "driving-licenses";
+    }
+
+    @Override
+    public String getDrivingLicenseCategoryLinksPage(Model model) {
+        Client currentClient = (Client) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        List<DrivingLicense> drivingLicenseList = drivingLicenseRepository.findAll();
+
+        List<DrivingLicenseCategoryLinkDto> drivingLicenseCategoryLinkDtoList = new ArrayList<>();
+        drivingLicenseList.forEach(drivingLicense -> {
+            if (StringUtils.hasLength(drivingLicense.getLicenseNumber())
+                    && Objects.nonNull(drivingLicense.getClient())
+                    && !CollectionUtils.isEmpty(drivingLicense.getDrivingLicenseCategories())) {
+                drivingLicense.getDrivingLicenseCategories().forEach(drivingLicenseCategory -> {
+                    if (Objects.nonNull(drivingLicenseCategory.getCategory())) {
+                        DrivingLicenseCategoryLinkDto drivingLicenseCategoryLinkDto = DrivingLicenseCategoryLinkDto.builder()
+                                .categoryName(CategoryType.valueOf(drivingLicenseCategory.getCategory().getCategoryName()))
+                                .licenseNumber(drivingLicense.getLicenseNumber())
+                                .phone(drivingLicense.getClient().getPhone())
+                                .build();
+                        drivingLicenseCategoryLinkDtoList.add(drivingLicenseCategoryLinkDto);
+                    }
+                });
+            }
+        });
+
+        model.addAttribute("drivingLicenseCategories", drivingLicenseCategoryLinkDtoList);
+        model.addAttribute("currentClient", currentClient);
+        return "driving-license-category-links";
     }
 
     @Override

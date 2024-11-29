@@ -1,6 +1,7 @@
 package com.example.stankingibdd.controller;
 
 import com.example.stankingibdd.model.ClientDto;
+import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
 import com.example.stankingibdd.service.EditTablesService;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +85,7 @@ public class EditTablesController {
     }
 
     @PostMapping("/driving-license/delete")
-    public String editDrivingLicense(@RequestParam String licenseNumber, RedirectAttributes redirectAttributes) {
+    public String deleteDrivingLicense(@RequestParam String licenseNumber, RedirectAttributes redirectAttributes) {
         try {
             editTablesService.deleteDrivingLicense(licenseNumber);
             redirectAttributes.addFlashAttribute("successSaveData", "Выполнение успешное удаление водительского удостоверения!");
@@ -94,5 +95,31 @@ public class EditTablesController {
         }
 
         return "redirect:/driving-licenses";
+    }
+
+    @PostMapping("/driving-license-category-link/add")
+    public String addDrivingLicenseCategoryLink(@ModelAttribute DrivingLicenseCategoryLinkDto drivingLicenseCategoryLinkDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.addDrivingLicenseCategoryLink(drivingLicenseCategoryLinkDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное добавление новой связи водительского удостоверения и категории!");
+        } catch (Exception e) {
+            log.error("Ошибка сохранения нового клиента: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить добавление новой связи водительского удостоверения и категории из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/driving-license-category-links";
+    }
+
+    @PostMapping("/driving-license-category-link/delete")
+    public String deleteDrivingLicenseCategoryLink(@RequestParam String licenseNumber, @RequestParam String categoryName, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.deleteDrivingLicenseCategoryLink(licenseNumber, categoryName);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнение успешное удаление связи водительского удостоверения и категории!");
+        } catch (Exception e) {
+            log.error("Ошибка удаления клиента: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить удаление связи водительского удостоверения и категории из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/driving-license-category-links";
     }
 }

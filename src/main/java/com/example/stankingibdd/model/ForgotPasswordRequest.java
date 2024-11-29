@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Модель запроса на восстановление пароля")
 public class ForgotPasswordRequest {
 
-    @Schema(description = "Телефон клиента")
+    @Schema(description = "Телефон клиента. Служит как username")
     private String phone;
 }

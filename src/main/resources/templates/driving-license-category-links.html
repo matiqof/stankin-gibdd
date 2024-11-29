@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Управление таблицей связей ВУ и категорий</title>
+  <link rel="icon" th:href="@{/images/logo.png}" type="image/x-icon">
+  <link rel="stylesheet" th:href="@{/css/edit-tables.css}">
+  <link rel="stylesheet" th:href="@{/css/body.css}">
+  <link rel="stylesheet" th:href="@{/css/navbar.css}">
+</head>
+<body>
+<div th:insert="~{navbar :: navbar}"></div>
+<div class="container">
+  <div class="header-with-sort">
+    <h2>Список связий водительских удостоверений и категорий</h2>
+    <form class="sort-form">
+      <input type="text" id="searchQuery" placeholder="Введите текст для поиска">
+      <button type="button" onclick="sortClients()">Сортировать</button>
+    </form>
+  </div>
+  <div class="table-container">
+    <table id="dataTable" class="table-wrapper">
+      <thead>
+      <tr>
+        <th>Название категории</th>
+        <th>Номер удостоверения</th>
+        <th>Телефон клиента</th>
+        <th>Действия</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="drivingLicenseCategory : ${drivingLicenseCategories}" th:id="'drivingLicenseCategory-' + ${drivingLicenseCategory.categoryName}">
+        <td th:text="${drivingLicenseCategory.categoryName}"></td>
+        <td>
+          <a th:href="@{/driving-licenses(phone=${drivingLicenseCategory.phone})}" class="hidden-redirect-button">
+            <span th:text="${drivingLicenseCategory.licenseNumber}"></span>
+          </a>
+        </td>
+        <td>
+          <a th:href="@{/clients(drivingLicenseNumber=${drivingLicenseCategory.licenseNumber})}" class="hidden-redirect-button">
+            <span th:text="${drivingLicenseCategory.phone}"></span>
+          </a>
+        </td>
+        <td>
+          <form th:action="@{/driving-license-category-link/delete}" method="post" style="display: inline;">
+            <input type="hidden" name="licenseNumber" th:value="${drivingLicenseCategory.licenseNumber}">
+            <input type="hidden" name="categoryName" th:value="${drivingLicenseCategory.categoryName}">
+            <button type="submit" class="delete-button">
+              <img th:src="@{/images/delete.png}" alt="Delete" class="delete-icon">
+            </button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="button-container">
+    <button onclick="showAddDrivingLicenseCategoryLinkForm()">Добавить новую связь</button>
+    <a href="/driving-licenses">Обновить данные</a>
+  </div>
+
+  <div id="editModal" class="modal modal-none-display">
+    <div id="editModalContent" class="modal-content main-container">
+      <span onclick="hideEditModal()" class="close">&times;</span>
+      <h3 id="modalTitle">Добавить новую связь</h3>
+      <form id="editForm" method="post">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="categoryName">Название категории:<span class="required">*</span></label>
+            <select id="categoryName" name="categoryName" required>
+              <option th:each="category : ${T(com.example.stankingibdd.model.CategoryType).values()}"
+                      th:value="${category}"
+                      th:text="${category}">
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="licenseNumber">Номер удостоверения:<span class="required">*</span></label>
+            <input type="text" maxlength="10" id="licenseNumber" name="licenseNumber" required>
+          </div>
+        </div>
+        <div class="button-row">
+          <button class="modal-button" type="submit">Сохранить</button>
+          <button type="button" onclick="hideEditModal()" class="modal-button">Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div th:insert="~{info-modal :: infoModal}"></div>
+
+<script th:src="@{/js/driving-license-category-links.js}"></script>
+<script th:src="@{/js/edit-tables.js}"></script>
+</body>
+</html>

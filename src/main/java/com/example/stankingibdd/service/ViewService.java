@@ -31,6 +31,14 @@ public interface ViewService {
      */
     String getDrivingLicensesPage(String phone, Model model);
 
+    /**
+     * Получить template страницы управления таблицей связей водетиельских удостоверений и категорий
+     *
+     * @param model модель для отправки на ui {@link Model}
+     * @return template страницы
+     */
+    String getDrivingLicenseCategoryLinksPage(Model model);
+
 
     /**
      * Получить template страницы входа

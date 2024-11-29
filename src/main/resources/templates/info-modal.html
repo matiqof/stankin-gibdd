@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Информационная модалка</title>
+</head>
+<body>
+<div th:fragment="infoModal" id="infoModal" class="modal modal-flex-display" th:if="${successSaveData != null || errorSaveData != null}">
+  <div id="infoModalContent" class="modal-content main-container">
+    <span onclick="hideInfoModal()" class="close">&times;</span>
+    <img th:if="${successSaveData}" th:src="@{/images/success.png}"  alt="Успех" class="success-image">
+    <img th:if="${errorSaveData}" th:src="@{/images/unsuccess.png}"  alt="Неудача" class="unsuccess-image">
+    <p th:if="${successSaveData}" th:text="${successSaveData}">Сообщение об успешном сохранении</p>
+    <p th:if="${errorSaveData}" th:text="${errorSaveData}">Сообщение об ошибке</p>
+    <button onclick="hideInfoModal()" class="modal-button">Закрыть</button>
+  </div>
+</div>
+</body>
+</html>

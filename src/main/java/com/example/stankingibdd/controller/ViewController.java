@@ -31,6 +31,11 @@ public class ViewController implements ErrorController {
         return viewService.getDrivingLicensesPage(phone, model);
     }
 
+    @GetMapping("/driving-license-category-links")
+    public String drivingLicensesCategories(Model model) {
+        return viewService.getDrivingLicenseCategoryLinksPage(model);
+    }
+
     @GetMapping("/login")
     public String login() {
         return viewService.getLoginPage();
