@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/profile-reset-password-success").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
                         .requestMatchers("/clients").hasRole(ROLE_ADMIN)
                         .requestMatchers("/driving-licenses").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR)
-                        .requestMatchers("/driving-license-category-links").hasAnyRole(ROLE_ADMIN)
+                        .requestMatchers("/driving-license-category-links").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR)
                         .requestMatchers("/vehicles").hasAnyRole(ROLE_ADMIN, ROLE_OPERATOR, ROLE_INSPECTOR, ROLE_SYSTEM)
                         .requestMatchers("/accidents").hasAnyRole(ROLE_ADMIN, ROLE_INSPECTOR)
                         .requestMatchers("/accident-compositions").hasAnyRole(ROLE_ADMIN, ROLE_INSPECTOR)

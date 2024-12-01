@@ -22,18 +22,23 @@ public class ViewController implements ErrorController {
     }
 
     @GetMapping("/clients")
-    public String clients(@RequestParam(required = false) String drivingLicenseNumber, Model model) {
-        return viewService.getClientsPage(drivingLicenseNumber, model);
+    public String clients(@RequestParam(required = false) String phone, Model model) {
+        return viewService.getClientsPage(phone, model);
     }
 
     @GetMapping("/driving-licenses")
-    public String drivingLicenses(@RequestParam(required = false) String phone, Model model) {
-        return viewService.getDrivingLicensesPage(phone, model);
+    public String drivingLicenses(@RequestParam(required = false) String drivingLicenseNumber, Model model) {
+        return viewService.getDrivingLicensesPage(drivingLicenseNumber, model);
     }
 
     @GetMapping("/driving-license-category-links")
     public String drivingLicensesCategories(Model model) {
         return viewService.getDrivingLicenseCategoryLinksPage(model);
+    }
+
+    @GetMapping("/vehicles")
+    public String vehicles(Model model) {
+        return viewService.getVehiclesPage(model);
     }
 
     @GetMapping("/login")

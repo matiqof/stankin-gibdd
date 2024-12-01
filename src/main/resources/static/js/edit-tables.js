@@ -45,3 +45,39 @@ function setAnimationToModal(modal, modalContent) {
         modalContent.style.animationName = "slideIn";
     }, 290);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const table = document.getElementById('dataTable');
+    const headers = table.querySelectorAll('th');
+    const tbody = table.querySelector('tbody');
+    const rows = tbody.querySelectorAll('tr');
+
+    headers.forEach((header, index) => {
+        header.addEventListener('click', () => {
+            sortTable(index);
+        });
+    });
+
+    function sortTable(columnIndex) {
+        const rowsArray = Array.from(rows);
+        if (columnIndex === rowsArray.length) {
+            return;
+        }
+
+        rowsArray.sort((a, b) => {
+            const aValue = a.querySelectorAll('td')[columnIndex].innerText;
+            const bValue = b.querySelectorAll('td')[columnIndex].innerText;
+
+            if (columnIndex === 3 || columnIndex === 5 || columnIndex === 6 || columnIndex === 7) {
+                return aValue - bValue;
+            } else if (columnIndex === 8) {
+                return new Date(aValue) - new Date(bValue);
+            } else {
+                return aValue.localeCompare(bValue);
+            }
+        });
+
+        tbody.innerHTML = '';
+        rowsArray.forEach(row => tbody.appendChild(row));
+    }
+});

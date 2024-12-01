@@ -3,6 +3,7 @@ package com.example.stankingibdd.controller;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
+import com.example.stankingibdd.model.VehicleDto;
 import com.example.stankingibdd.service.EditTablesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,7 @@ public class EditTablesController {
             editTablesService.addDrivingLicense(drivingLicenseDto);
             redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное добавление нового водительского удостоверения!");
         } catch (Exception e) {
-            log.error("Ошибка сохранения нового клиента: " + e);
+            log.error("Ошибка сохранения нового водительского удостверения: " + e);
             redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить добавление нового водительского удостоверения из-за ошибки: " + e.getMessage());
         }
 
@@ -77,7 +78,7 @@ public class EditTablesController {
             editTablesService.editDrivingLicense(drivingLicenseDto);
             redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное изменение водительского удостоверения!");
         } catch (Exception e) {
-            log.error("Ошибка изменения клиента: " + e);
+            log.error("Ошибка изменения водительского удостверения: " + e);
             redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить изменение водительского удостоверения из-за ошибки: " + e.getMessage());
         }
 
@@ -90,7 +91,7 @@ public class EditTablesController {
             editTablesService.deleteDrivingLicense(licenseNumber);
             redirectAttributes.addFlashAttribute("successSaveData", "Выполнение успешное удаление водительского удостоверения!");
         } catch (Exception e) {
-            log.error("Ошибка удаления клиента: " + e);
+            log.error("Ошибка удаления водительского удостверения: " + e);
             redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить удаление водительского удостоверения из-за ошибки: " + e.getMessage());
         }
 
@@ -103,7 +104,7 @@ public class EditTablesController {
             editTablesService.addDrivingLicenseCategoryLink(drivingLicenseCategoryLinkDto);
             redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное добавление новой связи водительского удостоверения и категории!");
         } catch (Exception e) {
-            log.error("Ошибка сохранения нового клиента: " + e);
+            log.error("Ошибка сохранения новой связи категории и водительского удостверения: " + e);
             redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить добавление новой связи водительского удостоверения и категории из-за ошибки: " + e.getMessage());
         }
 
@@ -116,10 +117,49 @@ public class EditTablesController {
             editTablesService.deleteDrivingLicenseCategoryLink(licenseNumber, categoryName);
             redirectAttributes.addFlashAttribute("successSaveData", "Выполнение успешное удаление связи водительского удостоверения и категории!");
         } catch (Exception e) {
-            log.error("Ошибка удаления клиента: " + e);
+            log.error("Ошибка удаления связи категории и водительского удостверения: " + e);
             redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить удаление связи водительского удостоверения и категории из-за ошибки: " + e.getMessage());
         }
 
         return "redirect:/driving-license-category-links";
+    }
+
+    @PostMapping("/vehicle/add")
+    public String addVehicle(@ModelAttribute VehicleDto vehicleDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.addVehicle(vehicleDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное добавление нового транспортного средства!");
+        } catch (Exception e) {
+            log.error("Ошибка сохранения нового транспортного средства: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить добавление нового транспортного средства из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/vehicles";
+    }
+
+    @PostMapping("/vehicle/edit")
+    public String editVehicle(@ModelAttribute VehicleDto vehicleDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.editVehicle(vehicleDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное изменение транспортного средства!");
+        } catch (Exception e) {
+            log.error("Ошибка изменения транспортного средства: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить изменение транспортного средства из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/vehicles";
+    }
+
+    @PostMapping("/vehicle/delete")
+    public String deleteVehicle(@RequestParam String registrationNumber, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.deleteVehicle(registrationNumber);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнение успешное удаление транспортного средства!");
+        } catch (Exception e) {
+            log.error("Ошибка удаления транспортного средства: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить удаление транспортного средства из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/vehicles";
     }
 }

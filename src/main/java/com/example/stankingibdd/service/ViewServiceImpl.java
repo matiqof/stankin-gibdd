@@ -2,14 +2,18 @@ package com.example.stankingibdd.service;
 
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
+import com.example.stankingibdd.entity.Vehicle;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.mapper.DrivingLicenseMapper;
+import com.example.stankingibdd.mapper.VehicleMapper;
 import com.example.stankingibdd.model.CategoryType;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
+import com.example.stankingibdd.model.VehicleDto;
 import com.example.stankingibdd.repository.ClientRepository;
 import com.example.stankingibdd.repository.DrivingLicenseRepository;
+import com.example.stankingibdd.repository.VehicleRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +41,9 @@ public class ViewServiceImpl implements ViewService {
     private final DrivingLicenseRepository drivingLicenseRepository;
     private final DrivingLicenseMapper drivingLicenseMapper;
 
+    private final VehicleRepository vehicleRepository;
+    private final VehicleMapper vehicleMapper;
+
     @Override
     public String getIndexPage(Model model) {
         model.addAttribute("currentClient", SecurityContextHolder.getContext()
@@ -47,14 +54,14 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public String getClientsPage(String drivingLicenseNumber, Model model) {
+    public String getClientsPage(String phone, Model model) {
         Client currentClient = (Client) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        List<Client> clientList = (StringUtils.hasLength(drivingLicenseNumber)) ? clientRepository.findAll().stream()
+        List<Client> clientList = (StringUtils.hasLength(phone)) ? clientRepository.findAll().stream()
                 .filter(client -> {
                     if (Objects.nonNull(client.getDrivingLicense())) {
-                        return drivingLicenseNumber.equals(client.getDrivingLicense().getLicenseNumber());
+                        return phone.equals(client.getPhone());
                     }
 
                     return false;
@@ -78,14 +85,14 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public String getDrivingLicensesPage(String phone, Model model) {
+    public String getDrivingLicensesPage(String drivingLicenseNumber, Model model) {
         Client currentClient = (Client) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        List<DrivingLicense> drivingLicenseList = (StringUtils.hasLength(phone)) ? drivingLicenseRepository.findAll().stream()
+        List<DrivingLicense> drivingLicenseList = (StringUtils.hasLength(drivingLicenseNumber)) ? drivingLicenseRepository.findAll().stream()
                 .filter(drivingLicense -> {
             if (Objects.nonNull(drivingLicense.getClient())) {
-                return phone.equals(drivingLicense.getClient().getPhone());
+                return drivingLicenseNumber.equals(drivingLicense.getLicenseNumber());
             }
 
             return false;
@@ -135,6 +142,24 @@ public class ViewServiceImpl implements ViewService {
         model.addAttribute("drivingLicenseCategories", drivingLicenseCategoryLinkDtoList);
         model.addAttribute("currentClient", currentClient);
         return "driving-license-category-links";
+    }
+
+    @Override
+    public String getVehiclesPage(Model model) {
+        Client currentClient = (Client) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        List<Vehicle> vehicles = vehicleRepository.findAll();
+        Map<String, String> registrationNumberByPhone = vehicles.stream()
+                .collect(Collectors.toMap(Vehicle::getRegistrationNumber, vehicle -> vehicle.getClient().getPhone()));
+
+        List<VehicleDto> vehicleDtoList = vehicleMapper.map(vehicles).stream()
+                .peek(vehicleDto -> vehicleDto.setPhone(registrationNumberByPhone.get(vehicleDto.getRegistrationNumber())))
+                .toList();
+
+        model.addAttribute("vehicles", vehicleDtoList);
+        model.addAttribute("currentClient", currentClient);
+        return "vehicles";
     }
 
     @Override

@@ -32,12 +32,12 @@
       <tr th:each="drivingLicenseCategory : ${drivingLicenseCategories}" th:id="'drivingLicenseCategory-' + ${drivingLicenseCategory.categoryName}">
         <td th:text="${drivingLicenseCategory.categoryName}"></td>
         <td>
-          <a th:href="@{/driving-licenses(phone=${drivingLicenseCategory.phone})}" class="hidden-redirect-button">
+          <a th:href="@{/driving-licenses(drivingLicenseNumber=${drivingLicenseCategory.licenseNumber})}" class="hidden-redirect-button">
             <span th:text="${drivingLicenseCategory.licenseNumber}"></span>
           </a>
         </td>
         <td>
-          <a th:href="@{/clients(drivingLicenseNumber=${drivingLicenseCategory.licenseNumber})}" class="hidden-redirect-button">
+          <a th:href="@{/clients(phone=${drivingLicenseCategory.phone})}" class="hidden-redirect-button">
             <span th:text="${drivingLicenseCategory.phone}"></span>
           </a>
         </td>
@@ -57,7 +57,7 @@
 
   <div class="button-container">
     <button onclick="showAddDrivingLicenseCategoryLinkForm()">Добавить новую связь</button>
-    <a href="/driving-licenses">Обновить данные</a>
+    <a href="/driving-license-category-links">Обновить данные</a>
   </div>
 
   <div id="editModal" class="modal modal-none-display">
@@ -93,5 +93,6 @@
 
 <script th:src="@{/js/driving-license-category-links.js}"></script>
 <script th:src="@{/js/edit-tables.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </body>
 </html>

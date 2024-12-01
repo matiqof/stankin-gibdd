@@ -3,6 +3,7 @@ package com.example.stankingibdd.service;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
+import com.example.stankingibdd.model.VehicleDto;
 
 public interface EditTablesService {
 
@@ -62,4 +63,25 @@ public interface EditTablesService {
      * @param categoryName навзание категории водительского удостоверения
      */
     void deleteDrivingLicenseCategoryLink(String licenseNumber, String categoryName);
+
+    /**
+     * Добавить новое транспортное средства
+     *
+     * @param vehicleDto модель транспортного средства {@link VehicleDto}
+     */
+    void addVehicle(VehicleDto vehicleDto);
+
+    /**
+     * Изменить транспортное средства
+     *
+     * @param vehicleDto модель транспортного средства {@link VehicleDto}
+     */
+    void editVehicle(VehicleDto vehicleDto);
+
+    /**
+     * Удалить транспортное средства
+     *
+     * @param registrationNumber регистрационный номер транспортного средства
+     */
+    void deleteVehicle(String registrationNumber);
 }

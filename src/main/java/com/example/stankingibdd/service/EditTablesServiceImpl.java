@@ -4,16 +4,20 @@ import com.example.stankingibdd.entity.Category;
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
 import com.example.stankingibdd.entity.DrivingLicenseCategory;
+import com.example.stankingibdd.entity.Vehicle;
 import com.example.stankingibdd.exception.EditTablesException;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.mapper.DrivingLicenseMapper;
+import com.example.stankingibdd.mapper.VehicleMapper;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
+import com.example.stankingibdd.model.VehicleDto;
 import com.example.stankingibdd.repository.CategoryRepository;
 import com.example.stankingibdd.repository.ClientRepository;
 import com.example.stankingibdd.repository.DrivingLicenseCategoryRepository;
 import com.example.stankingibdd.repository.DrivingLicenseRepository;
+import com.example.stankingibdd.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,6 +41,9 @@ public class EditTablesServiceImpl implements EditTablesService {
     private final DrivingLicenseCategoryRepository drivingLicenseCategoryRepository;
 
     private final CategoryRepository categoryRepository;
+
+    private final VehicleRepository vehicleRepository;
+    private final VehicleMapper vehicleMapper;
 
     @Override
     public void addClient(ClientDto clientDto) {
@@ -104,7 +111,12 @@ public class EditTablesServiceImpl implements EditTablesService {
         }
 
         String phone = drivingLicenseDto.getPhone();
-        Client client = checkClientByPhone(phone);
+        checkClientByPhone(phone);
+        Client client = clientRepository.findByPhone(phone);
+        if (Objects.nonNull(client.getDrivingLicense())) {
+            final String errorMessage = "Для клиент с указанным номером телефона " + phone + " уже существует водительское удостоверение";
+            throw new EditTablesException(errorMessage);
+        }
 
         DrivingLicense drivingLicense = drivingLicenseMapper.map(drivingLicenseDto);
         drivingLicense.setClient(client);
@@ -115,7 +127,7 @@ public class EditTablesServiceImpl implements EditTablesService {
     @Override
     public void editDrivingLicense(DrivingLicenseDto drivingLicenseDto) {
         if (Objects.isNull(drivingLicenseDto)) {
-            final String errorMessage = "Невозможно добавить пустое водительское удостоверение";
+            final String errorMessage = "Невозможно изменить пустое водительское удостоверение";
             throw new EditTablesException(errorMessage);
         }
 
@@ -131,11 +143,17 @@ public class EditTablesServiceImpl implements EditTablesService {
 
         String phone = drivingLicenseDto.getPhone();
         if (Objects.nonNull(drivingLicense.getClient()) && !phone.equals(drivingLicense.getClient().getPhone())) {
-            Client client = checkClientByPhone(phone);
+            checkClientByPhone(phone);
+            Client client = clientRepository.findByPhone(phone);
+            if (Objects.nonNull(client.getDrivingLicense())) {
+                final String errorMessage = "Для клиент с указанным номером телефона " + phone + " уже существует водительское удостоверение";
+                throw new EditTablesException(errorMessage);
+            }
 
             drivingLicense.setClient(client);
-            drivingLicenseRepository.save(drivingLicense);
         }
+
+        drivingLicenseRepository.save(drivingLicense);
     }
 
     @Override
@@ -151,21 +169,6 @@ public class EditTablesServiceImpl implements EditTablesService {
         }
 
         drivingLicenseRepository.deleteByLicenseNumber(licenseNumber);
-    }
-
-    private Client checkClientByPhone(String phone) {
-        if (!clientRepository.existsClientByPhone(phone)) {
-            final String errorMessage = "Клиент с указанным номером телефона " + phone + " не существует";
-            throw new EditTablesException(errorMessage);
-        }
-
-        Client client = clientRepository.findByPhone(phone);
-        if (Objects.nonNull(client.getDrivingLicense())) {
-            final String errorMessage = "Для клиент с указанным номером телефона " + phone + " уже существует водительское удостоверение";
-            throw new EditTablesException(errorMessage);
-        }
-
-        return client;
     }
 
     @Override
@@ -222,5 +225,82 @@ public class EditTablesServiceImpl implements EditTablesService {
         }
 
         drivingLicenseCategoryRepository.deleteByLicenseNumberAndCategoryName(licenseNumber, categoryName);
+    }
+
+    @Override
+    public void addVehicle(VehicleDto vehicleDto) {
+        if (Objects.isNull(vehicleDto)) {
+            final String errorMessage = "Невозможно добавить пустое транспортное средство";
+            throw new EditTablesException(errorMessage);
+        }
+
+        String registrationNumber = vehicleDto.getRegistrationNumber();
+        if (vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
+            final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " уже существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        String phone = vehicleDto.getPhone();
+        checkClientByPhone(phone);
+        Client client = clientRepository.findByPhone(phone);
+
+        Vehicle vehicle = vehicleMapper.map(vehicleDto);
+        vehicle.setClient(client);
+
+        vehicleRepository.save(vehicle);
+    }
+
+    @Override
+    public void editVehicle(VehicleDto vehicleDto) {
+        if (Objects.isNull(vehicleDto)) {
+            final String errorMessage = "Невозможно изменить пустое транспортное средство";
+            throw new EditTablesException(errorMessage);
+        }
+
+        String registrationNumber = vehicleDto.getRegistrationNumber();
+        if (!vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
+            final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        Vehicle vehicleFromDb = vehicleRepository.findByRegistrationNumber(registrationNumber);
+        Vehicle vehicle = vehicleMapper.map(vehicleFromDb, vehicleMapper.map(vehicleDto));
+
+        String phone = vehicleDto.getPhone();
+        if (Objects.nonNull(vehicle.getClient()) && !phone.equals(vehicle.getClient().getPhone())) {
+            checkClientByPhone(phone);
+            Client client = clientRepository.findByPhone(phone);
+
+            vehicle.setClient(client);
+        }
+
+        vehicleRepository.save(vehicle);
+    }
+
+    @Override
+    public void deleteVehicle(String registrationNumber) {
+        if (!StringUtils.hasLength(registrationNumber)) {
+            final String errorMessage = "Невозможно удалить транспортное средства с пустым регистрационным знаком";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (!vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
+            final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        vehicleRepository.deleteByRegistrationNumber(registrationNumber);
+    }
+
+    /**
+     * Проверка клиента на существование по номеру телефона
+     *
+     * @param phone телефон клиента
+     */
+    private void checkClientByPhone(String phone) {
+        if (!clientRepository.existsClientByPhone(phone)) {
+            final String errorMessage = "Клиент с указанным номером телефона " + phone + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
     }
 }

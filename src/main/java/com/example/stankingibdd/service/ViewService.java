@@ -17,19 +17,19 @@ public interface ViewService {
      * Получить template страницы управления таблицей клиентов
      *
      * @param model модель для отправки на ui {@link Model}
-     * @param drivingLicenseNumber фильтр по номеру ВУ для списка клиентов
+     * @param phone фильтр по телефону клиента для списка клиентов
      * @return template страницы
      */
-    String getClientsPage(String drivingLicenseNumber, Model model);
+    String getClientsPage(String phone, Model model);
 
     /**
      * Получить template страницы управления таблицей водительских удостоверений
      *
      * @param model модель для отправки на ui {@link Model}
-     * @param phone фильтр по телефона клиента для списка ВУ
+     * @param drivingLicenseNumber фильтр по номеру ВУ для списка водительских удостоверений
      * @return template страницы
      */
-    String getDrivingLicensesPage(String phone, Model model);
+    String getDrivingLicensesPage(String drivingLicenseNumber, Model model);
 
     /**
      * Получить template страницы управления таблицей связей водетиельских удостоверений и категорий
@@ -38,6 +38,14 @@ public interface ViewService {
      * @return template страницы
      */
     String getDrivingLicenseCategoryLinksPage(Model model);
+
+    /**
+     * Получить template страницы управления таблицей транспротных средств
+     *
+     * @param model модель для отправки на ui {@link Model}
+     * @return template страницы
+     */
+    String getVehiclesPage(Model model);
 
 
     /**
