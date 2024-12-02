@@ -1,5 +1,6 @@
 package com.example.stankingibdd.service;
 
+import com.example.stankingibdd.model.AccidentDto;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
@@ -106,4 +107,25 @@ public interface EditTablesService {
      * @param fineId Идентификатор штрафа
      */
     void deleteFine(String fineId);
+
+    /**
+     * Добавить новую аварию
+     *
+     * @param accidentDto модель аварии {@link AccidentDto}
+     */
+    void addAccident(AccidentDto accidentDto);
+
+    /**
+     * Изменить аварию
+     *
+     * @param accidentDto модель аварии {@link AccidentDto}
+     */
+    void editAccident(AccidentDto accidentDto);
+
+    /**
+     * Удалить аварию
+     *
+     * @param accidentId Идентификатор аварии
+     */
+    void deleteAccident(String accidentId);
 }

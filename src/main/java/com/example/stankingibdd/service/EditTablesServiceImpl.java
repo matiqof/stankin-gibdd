@@ -1,5 +1,6 @@
 package com.example.stankingibdd.service;
 
+import com.example.stankingibdd.entity.Accident;
 import com.example.stankingibdd.entity.Category;
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
@@ -7,15 +8,18 @@ import com.example.stankingibdd.entity.DrivingLicenseCategory;
 import com.example.stankingibdd.entity.Fine;
 import com.example.stankingibdd.entity.Vehicle;
 import com.example.stankingibdd.exception.EditTablesException;
+import com.example.stankingibdd.mapper.AccidentMapper;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.mapper.DrivingLicenseMapper;
 import com.example.stankingibdd.mapper.FineMapper;
 import com.example.stankingibdd.mapper.VehicleMapper;
+import com.example.stankingibdd.model.AccidentDto;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
 import com.example.stankingibdd.model.FineDto;
 import com.example.stankingibdd.model.VehicleDto;
+import com.example.stankingibdd.repository.AccidentRepository;
 import com.example.stankingibdd.repository.CategoryRepository;
 import com.example.stankingibdd.repository.ClientRepository;
 import com.example.stankingibdd.repository.DrivingLicenseCategoryRepository;
@@ -52,6 +56,9 @@ public class EditTablesServiceImpl implements EditTablesService {
 
     private final FineRepository fineRepository;
     private final FineMapper fineMapper;
+
+    private final AccidentRepository accidentRepository;
+    private final AccidentMapper accidentMapper;
 
     @Override
     public void addClient(ClientDto clientDto) {
@@ -360,11 +367,56 @@ public class EditTablesServiceImpl implements EditTablesService {
 
         UUID id = UUID.fromString(fineId);
         if (!fineRepository.existsFineByFineId(id)) {
-            final String errorMessage = "Штраф с ID " + fineId + " не существует";
+            final String errorMessage = "Штраф с идентификатором " + fineId + " не существует";
             throw new EditTablesException(errorMessage);
         }
 
         fineRepository.deleteByFineId(id);
+    }
+
+    @Override
+    public void addAccident(AccidentDto accidentDto) {
+        if (Objects.isNull(accidentDto)) {
+            final String errorMessage = "Невозможно добавить пустую аварию";
+            throw new EditTablesException(errorMessage);
+        }
+
+        accidentRepository.save(accidentMapper.mapWithoutId(accidentDto));
+    }
+
+    @Override
+    public void editAccident(AccidentDto accidentDto) {
+        if (Objects.isNull(accidentDto)) {
+            final String errorMessage = "Невозможно изменить пустую аварию";
+            throw new EditTablesException(errorMessage);
+        }
+
+        UUID accidentId = UUID.fromString(accidentDto.getAccidentId());
+        if (!accidentRepository.existsAccidentByAccidentId(accidentId)) {
+            final String errorMessage = "Авария с идентификатором " + accidentId + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        Accident accidentFromDb = accidentRepository.findByAccidentId(accidentId);
+        Accident accident = accidentMapper.map(accidentFromDb, accidentMapper.map(accidentDto));
+
+        accidentRepository.save(accident);
+    }
+
+    @Override
+    public void deleteAccident(String accidentId) {
+        if (!StringUtils.hasLength(accidentId)) {
+            final String errorMessage = "Невозможно удалить аварию с пустым идентификатором";
+            throw new EditTablesException(errorMessage);
+        }
+
+        UUID id = UUID.fromString(accidentId);
+        if (!accidentRepository.existsAccidentByAccidentId(id)) {
+            final String errorMessage = "Авария с идентификатором " + accidentId + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        accidentRepository.deleteByAccidentId(id);
     }
 
     /**

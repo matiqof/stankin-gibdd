@@ -1,19 +1,23 @@
 package com.example.stankingibdd.service;
 
+import com.example.stankingibdd.entity.Accident;
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
 import com.example.stankingibdd.entity.Fine;
 import com.example.stankingibdd.entity.Vehicle;
+import com.example.stankingibdd.mapper.AccidentMapper;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.mapper.DrivingLicenseMapper;
 import com.example.stankingibdd.mapper.FineMapper;
 import com.example.stankingibdd.mapper.VehicleMapper;
+import com.example.stankingibdd.model.AccidentDto;
 import com.example.stankingibdd.model.CategoryType;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
 import com.example.stankingibdd.model.FineDto;
 import com.example.stankingibdd.model.VehicleDto;
+import com.example.stankingibdd.repository.AccidentRepository;
 import com.example.stankingibdd.repository.ClientRepository;
 import com.example.stankingibdd.repository.DrivingLicenseRepository;
 import com.example.stankingibdd.repository.FineRepository;
@@ -51,6 +55,9 @@ public class ViewServiceImpl implements ViewService {
 
     private final FineRepository fineRepository;
     private final FineMapper fineMapper;
+
+    private final AccidentRepository accidentRepository;
+    private final AccidentMapper accidentMapper;
 
     @Override
     public String getIndexPage(Model model) {
@@ -192,6 +199,19 @@ public class ViewServiceImpl implements ViewService {
         model.addAttribute("fines", fineDtoList);
         model.addAttribute("currentClient", currentClient);
         return "fines";
+    }
+
+    @Override
+    public String getAccidentsPage(Model model) {
+        Client currentClient = (Client) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        List<Accident> accidents = accidentRepository.findAll();
+        List<AccidentDto> accidentDtoList = accidentMapper.map(accidents);
+
+        model.addAttribute("accidents", accidentDtoList);
+        model.addAttribute("currentClient", currentClient);
+        return "accidents";
     }
 
     @Override

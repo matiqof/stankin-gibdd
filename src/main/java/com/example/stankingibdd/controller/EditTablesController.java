@@ -1,5 +1,6 @@
 package com.example.stankingibdd.controller;
 
+import com.example.stankingibdd.model.AccidentDto;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
@@ -201,5 +202,44 @@ public class EditTablesController {
         }
 
         return "redirect:/fines";
+    }
+
+    @PostMapping("/accident/add")
+    public String addAccident(@ModelAttribute AccidentDto accidentDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.addAccident(accidentDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное добавление новой аварии!");
+        } catch (Exception e) {
+            log.error("Ошибка сохранения новой аварии: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить добавление новой аварии из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/accidents";
+    }
+
+    @PostMapping("/accident/edit")
+    public String editAccident(@ModelAttribute AccidentDto accidentDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.editAccident(accidentDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное изменение аварии!");
+        } catch (Exception e) {
+            log.error("Ошибка изменения аварии: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить изменение аварии из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/accidents";
+    }
+
+    @PostMapping("/accident/delete")
+    public String deleteAccident(@RequestParam String accidentId, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.deleteAccident(accidentId);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное удаление аварии!");
+        } catch (Exception e) {
+            log.error("Ошибка удаления аварии: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить удаление аварии из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/accidents";
     }
 }
