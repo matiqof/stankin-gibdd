@@ -3,6 +3,7 @@ package com.example.stankingibdd.service;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
+import com.example.stankingibdd.model.FineDto;
 import com.example.stankingibdd.model.VehicleDto;
 
 public interface EditTablesService {
@@ -84,4 +85,25 @@ public interface EditTablesService {
      * @param registrationNumber регистрационный номер транспортного средства
      */
     void deleteVehicle(String registrationNumber);
+
+    /**
+     * Добавить новый штраф
+     *
+     * @param fineDto модель штрафа {@link FineDto}
+     */
+    void addFine(FineDto fineDto);
+
+    /**
+     * Изменить штраф
+     *
+     * @param fineDto модель штрафа {@link FineDto}
+     */
+    void editFine(FineDto fineDto);
+
+    /**
+     * Удалить штраф
+     *
+     * @param fineId Идентификатор штрафа
+     */
+    void deleteFine(String fineId);
 }

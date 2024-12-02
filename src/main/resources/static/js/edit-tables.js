@@ -1,4 +1,4 @@
-function sortClients() {
+function filterData() {
     const searchQuery = document.getElementById('searchQuery').value.toLowerCase();
     const table = document.getElementById('dataTable');
     const rows = table.getElementsByTagName('tr');
@@ -60,7 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function sortTable(columnIndex) {
         const rowsArray = Array.from(rows);
-        if (columnIndex === rowsArray.length) {
+
+        if (columnIndex === rowsArray[0].querySelectorAll('td').length - 1) {
             return;
         }
 
@@ -68,9 +69,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const aValue = a.querySelectorAll('td')[columnIndex].innerText;
             const bValue = b.querySelectorAll('td')[columnIndex].innerText;
 
-            if (columnIndex === 3 || columnIndex === 5 || columnIndex === 6 || columnIndex === 7) {
-                return aValue - bValue;
-            } else if (columnIndex === 8) {
+            if (aValue === '' || aValue === 'null' || aValue === 'undefined') {
+                return 1;
+            }
+            if (bValue === '' || bValue === 'null' || bValue === 'undefined') {
+                return -1;
+            }
+
+            if (isNumeric(aValue) && isNumeric(bValue)) {
+                return parseFloat(aValue) - parseFloat(bValue);
+            } else if (isDate(aValue) && isDate(bValue)) {
                 return new Date(aValue) - new Date(bValue);
             } else {
                 return aValue.localeCompare(bValue);
@@ -79,5 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tbody.innerHTML = '';
         rowsArray.forEach(row => tbody.appendChild(row));
+    }
+
+    function isNumeric(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+    }
+
+    function isDate(value) {
+        const date = new Date(value);
+        return !isNaN(date.getTime());
     }
 });

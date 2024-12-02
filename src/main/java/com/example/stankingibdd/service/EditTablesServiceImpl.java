@@ -4,19 +4,23 @@ import com.example.stankingibdd.entity.Category;
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
 import com.example.stankingibdd.entity.DrivingLicenseCategory;
+import com.example.stankingibdd.entity.Fine;
 import com.example.stankingibdd.entity.Vehicle;
 import com.example.stankingibdd.exception.EditTablesException;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.mapper.DrivingLicenseMapper;
+import com.example.stankingibdd.mapper.FineMapper;
 import com.example.stankingibdd.mapper.VehicleMapper;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
+import com.example.stankingibdd.model.FineDto;
 import com.example.stankingibdd.model.VehicleDto;
 import com.example.stankingibdd.repository.CategoryRepository;
 import com.example.stankingibdd.repository.ClientRepository;
 import com.example.stankingibdd.repository.DrivingLicenseCategoryRepository;
 import com.example.stankingibdd.repository.DrivingLicenseRepository;
+import com.example.stankingibdd.repository.FineRepository;
 import com.example.stankingibdd.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +49,9 @@ public class EditTablesServiceImpl implements EditTablesService {
 
     private final VehicleRepository vehicleRepository;
     private final VehicleMapper vehicleMapper;
+
+    private final FineRepository fineRepository;
+    private final FineMapper fineMapper;
 
     @Override
     public void addClient(ClientDto clientDto) {
@@ -290,6 +298,73 @@ public class EditTablesServiceImpl implements EditTablesService {
         }
 
         vehicleRepository.deleteByRegistrationNumber(registrationNumber);
+    }
+
+    @Override
+    public void addFine(FineDto fineDto) {
+        if (Objects.isNull(fineDto)) {
+            final String errorMessage = "Невозможно добавить пустой штраф";
+            throw new EditTablesException(errorMessage);
+        }
+
+        String registrationNumber = fineDto.getVehicleRegistrationNumber();
+        if (!vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
+            final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
+
+        Fine fine = fineMapper.mapWithoutId(fineDto);
+        fine.setVehicle(vehicle);
+
+        fineRepository.save(fine);
+    }
+
+    @Override
+    public void editFine(FineDto fineDto) {
+        if (Objects.isNull(fineDto)) {
+            final String errorMessage = "Невозможно изменить пустой штраф";
+            throw new EditTablesException(errorMessage);
+        }
+
+        UUID fineId = UUID.fromString(fineDto.getFineId());
+        if (!fineRepository.existsFineByFineId(fineId)) {
+            final String errorMessage = "Штраф с идентификатором " + fineId + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        Fine fineFromDb = fineRepository.findByFineId(fineId);
+        Fine fine = fineMapper.map(fineFromDb, fineMapper.map(fineDto));
+
+        String registrationNumber = fineDto.getVehicleRegistrationNumber();
+        if (Objects.nonNull(fine.getVehicle()) && !registrationNumber.equals(fine.getVehicle().getRegistrationNumber())) {
+            if (!vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
+                final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " не существует";
+                throw new EditTablesException(errorMessage);
+            }
+
+            Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
+            fine.setVehicle(vehicle);
+        }
+
+        fineRepository.save(fine);
+    }
+
+    @Override
+    public void deleteFine(String fineId) {
+        if (!StringUtils.hasLength(fineId)) {
+            final String errorMessage = "Невозможно удалить штраф с пустым идентификатором";
+            throw new EditTablesException(errorMessage);
+        }
+
+        UUID id = UUID.fromString(fineId);
+        if (!fineRepository.existsFineByFineId(id)) {
+            final String errorMessage = "Штраф с ID " + fineId + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        fineRepository.deleteByFineId(id);
     }
 
     /**

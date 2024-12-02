@@ -37,8 +37,13 @@ public class ViewController implements ErrorController {
     }
 
     @GetMapping("/vehicles")
-    public String vehicles(Model model) {
-        return viewService.getVehiclesPage(model);
+    public String vehicles(@RequestParam(required = false) String registrationNumber, Model model) {
+        return viewService.getVehiclesPage(registrationNumber, model);
+    }
+
+    @GetMapping("/fines")
+    public String fines(Model model) {
+        return viewService.getFinesPage(model);
     }
 
     @GetMapping("/login")

@@ -39,7 +39,7 @@ CREATE TABLE accident
     location    VARCHAR(255) NOT NULL,
     description VARCHAR(255)          DEFAULT NULL,
     date        DATE         NOT NULL DEFAULT CURRENT_DATE,
-    time        TIME         NOT NULL DEFAULT CURRENT_TIME,
+    time        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (accident_id)
 );
 
@@ -97,7 +97,7 @@ CREATE TABLE fine
     fine_id     UUID         NOT NULL,
     vehicle_id  UUID         NOT NULL,
     date        DATE         NOT NULL DEFAULT CURRENT_DATE,
-    time        TIME         NOT NULL DEFAULT CURRENT_TIME,
+    time        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     location    VARCHAR(255) NOT NULL,
     amount      INT          NOT NULL,
     type        VARCHAR(255) NOT NULL,
@@ -105,7 +105,8 @@ CREATE TABLE fine
     article     VARCHAR(255) NOT NULL,
     PRIMARY KEY (fine_id),
     CONSTRAINT vehicle_id FOREIGN KEY (vehicle_id) REFERENCES vehicle (vehicle_id),
-    CONSTRAINT fine_chk_1 CHECK (date <= CURRENT_DATE)
+    CONSTRAINT fine_chk_1 CHECK (date <= CURRENT_DATE
+)
     );
 
 CREATE TABLE password_reset_token

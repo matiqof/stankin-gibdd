@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление таблицей штрафов</title>
+    <link rel="icon" th:href="@{/images/logo.png}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/css/edit-tables.css}">
+    <link rel="stylesheet" th:href="@{/css/body.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+</head>
+<body>
+<div th:insert="~{navbar :: navbar}"></div>
+<div class="container">
+    <div class="header-with-sort">
+        <h2>Список штрафов</h2>
+        <form class="sort-form">
+            <input type="text" id="searchQuery" placeholder="Введите текст для поиска">
+            <button type="button" onclick="filterData()">Фильтровать</button>
+        </form>
+    </div>
+    <div class="table-container">
+        <table id="dataTable" class="table-wrapper">
+            <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Время</th>
+                <th>Место</th>
+                <th>Сумма</th>
+                <th>Тип</th>
+                <th>Описание</th>
+                <th>Статья</th>
+                <th>Транспортное средство</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="fine : ${fines}" th:id="'fine-' + ${fine.fineId}">
+                <td th:text="${#dates.format(fine.date, 'yyyy-MM-dd')}"></td>
+                <td th:text="${#dates.format(fine.time, 'HH:mm')}"></td>
+                <td th:text="${fine.location}"></td>
+                <td th:text="${fine.amount}"></td>
+                <td th:text="${fine.type}"></td>
+                <td th:text="${fine.description}"></td>
+                <td th:text="${fine.article}"></td>
+                <td>
+                    <a th:href="@{/vehicles(registrationNumber=${fine.vehicleRegistrationNumber})}" class="hidden-redirect-button">
+                        <span th:text="${fine.vehicleRegistrationNumber}"></span>
+                    </a>
+                </td>
+                <td>
+                    <button class="edit-button" th:attr="onclick='editFine(\'' + ${fine.fineId} + '\', \'' + ${#dates.format(fine.date, 'yyyy-MM-dd')} + '\', \'' + ${#dates.format(fine.time, 'HH:mm')} + '\', \'' + ${fine.location} + '\', \'' + ${fine.amount} + '\', \'' + ${fine.type} + '\', \'' + ${fine.description} + '\', \'' + ${fine.article} + '\', \'' + ${fine.vehicleRegistrationNumber} + '\')'">Редактировать</button>
+                    <form th:action="@{/fine/delete}" method="post" style="display: inline;">
+                        <input type="hidden" name="fineId" th:value="${fine.fineId}">
+                        <button type="submit" class="delete-button">
+                            <img th:src="@{/images/delete.png}" alt="Delete" class="delete-icon">
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="button-container">
+        <button onclick="showAddFineForm()">Добавить штраф</button>
+        <a href="/fines">Обновить данные</a>
+    </div>
+
+    <div id="editModal" class="modal modal-none-display">
+        <div id="editModalContent" class="modal-content main-container">
+            <span onclick="hideEditModal()" class="close">&times;</span>
+            <h3 id="modalTitle">Добавить новый штраф</h3>
+            <form id="editForm" method="post">
+                <input type="text" id="fineId" name="fineId" hidden>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Дата:<span class="required">*</span></label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Время:<span class="required">*</span></label>
+                        <input type="time" id="time" name="time" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="location">Место:<span class="required">*</span></label>
+                        <input type="text" id="location" name="location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Сумма:<span class="required">*</span></label>
+                        <input type="number" id="amount" name="amount" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="type">Тип:<span class="required">*</span></label>
+                        <input type="text" id="type" name="type" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Описание:</label>
+                        <input type="text" id="description" name="description">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="article">Статья:<span class="required">*</span></label>
+                        <input type="text" id="article" name="article" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vehicleRegistrationNumber">Транспортное средство:<span class="required">*</span></label>
+                        <input type="text" id="vehicleRegistrationNumber" name="vehicleRegistrationNumber" required>
+                    </div>
+                </div>
+                <div class="button-row">
+                    <button class="modal-button" type="submit">Сохранить</button>
+                    <button type="button" onclick="hideEditModal()" class="modal-button">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:insert="~{info-modal :: infoModal}"></div>
+
+<script th:src="@{/js/fines.js}"></script>
+<script th:src="@{/js/edit-tables.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</body>
+</html>

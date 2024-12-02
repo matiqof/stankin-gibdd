@@ -3,6 +3,7 @@ package com.example.stankingibdd.controller;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
+import com.example.stankingibdd.model.FineDto;
 import com.example.stankingibdd.model.VehicleDto;
 import com.example.stankingibdd.service.EditTablesService;
 import lombok.RequiredArgsConstructor;
@@ -161,5 +162,44 @@ public class EditTablesController {
         }
 
         return "redirect:/vehicles";
+    }
+
+    @PostMapping("/fine/add")
+    public String addFine(@ModelAttribute FineDto fineDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.addFine(fineDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное добавление нового штрафа!");
+        } catch (Exception e) {
+            log.error("Ошибка сохранения нового штрафа: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить добавление нового штрафа из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/fines";
+    }
+
+    @PostMapping("/fine/edit")
+    public String editFine(@ModelAttribute FineDto fineDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.editFine(fineDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное изменение штрафа!");
+        } catch (Exception e) {
+            log.error("Ошибка изменения штрафа: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить изменение штрафа из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/fines";
+    }
+
+    @PostMapping("/fine/delete")
+    public String deleteFine(@RequestParam String fineId, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.deleteFine(fineId);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнение успешное удаление штрафа!");
+        } catch (Exception e) {
+            log.error("Ошибка удаления штрафа: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить удаление штрафа из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/fines";
     }
 }

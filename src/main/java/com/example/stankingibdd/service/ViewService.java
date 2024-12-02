@@ -43,9 +43,18 @@ public interface ViewService {
      * Получить template страницы управления таблицей транспротных средств
      *
      * @param model модель для отправки на ui {@link Model}
+     * @param registrationNumber фильтр по регистрационному номеру для списка транспортных средств
      * @return template страницы
      */
-    String getVehiclesPage(Model model);
+    String getVehiclesPage(String registrationNumber, Model model);
+
+    /**
+     * Получить template страницы управления таблицей штрафов
+     *
+     * @param model модель для отправки на ui {@link Model}
+     * @return template страницы
+     */
+    String getFinesPage(Model model);
 
 
     /**

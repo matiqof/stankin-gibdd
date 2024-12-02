@@ -2,17 +2,21 @@ package com.example.stankingibdd.service;
 
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
+import com.example.stankingibdd.entity.Fine;
 import com.example.stankingibdd.entity.Vehicle;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.mapper.DrivingLicenseMapper;
+import com.example.stankingibdd.mapper.FineMapper;
 import com.example.stankingibdd.mapper.VehicleMapper;
 import com.example.stankingibdd.model.CategoryType;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
+import com.example.stankingibdd.model.FineDto;
 import com.example.stankingibdd.model.VehicleDto;
 import com.example.stankingibdd.repository.ClientRepository;
 import com.example.stankingibdd.repository.DrivingLicenseRepository;
+import com.example.stankingibdd.repository.FineRepository;
 import com.example.stankingibdd.repository.VehicleRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.example.stankingibdd.util.ControllersStaticData.PasswordRecoveryAttributes;
@@ -43,6 +48,9 @@ public class ViewServiceImpl implements ViewService {
 
     private final VehicleRepository vehicleRepository;
     private final VehicleMapper vehicleMapper;
+
+    private final FineRepository fineRepository;
+    private final FineMapper fineMapper;
 
     @Override
     public String getIndexPage(Model model) {
@@ -145,11 +153,17 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public String getVehiclesPage(Model model) {
+    public String getVehiclesPage(String registrationNumber, Model model) {
         Client currentClient = (Client) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        List<Vehicle> vehicles = vehicleRepository.findAll();
+        List<Vehicle> vehicles = (StringUtils.hasLength(registrationNumber)) ? vehicleRepository.findAll().stream().filter(vehicle -> {
+            if (!CollectionUtils.isEmpty(vehicle.getFines())) {
+                return registrationNumber.equals(vehicle.getRegistrationNumber());
+            }
+
+            return false;
+        }).toList() : vehicleRepository.findAll();
         Map<String, String> registrationNumberByPhone = vehicles.stream()
                 .collect(Collectors.toMap(Vehicle::getRegistrationNumber, vehicle -> vehicle.getClient().getPhone()));
 
@@ -160,6 +174,24 @@ public class ViewServiceImpl implements ViewService {
         model.addAttribute("vehicles", vehicleDtoList);
         model.addAttribute("currentClient", currentClient);
         return "vehicles";
+    }
+
+    @Override
+    public String getFinesPage(Model model) {
+        Client currentClient = (Client) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        List<Fine> fines = fineRepository.findAll();
+        Map<UUID, String> registrationNumberByFineId = fines.stream()
+                .collect(Collectors.toMap(Fine::getFineId, fine -> fine.getVehicle().getRegistrationNumber()));
+
+        List<FineDto> fineDtoList = fineMapper.map(fines).stream()
+                .peek(fineDto -> fineDto.setVehicleRegistrationNumber(registrationNumberByFineId.get(UUID.fromString(fineDto.getFineId()))))
+                .toList();
+
+        model.addAttribute("fines", fineDtoList);
+        model.addAttribute("currentClient", currentClient);
+        return "fines";
     }
 
     @Override
