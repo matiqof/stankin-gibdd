@@ -1,6 +1,7 @@
 package com.example.stankingibdd.service;
 
 import com.example.stankingibdd.entity.Accident;
+import com.example.stankingibdd.entity.AccidentComposition;
 import com.example.stankingibdd.entity.Category;
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
@@ -13,12 +14,14 @@ import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.mapper.DrivingLicenseMapper;
 import com.example.stankingibdd.mapper.FineMapper;
 import com.example.stankingibdd.mapper.VehicleMapper;
+import com.example.stankingibdd.model.AccidentCompositionDto;
 import com.example.stankingibdd.model.AccidentDto;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
 import com.example.stankingibdd.model.FineDto;
 import com.example.stankingibdd.model.VehicleDto;
+import com.example.stankingibdd.repository.AccidentCompositionRepository;
 import com.example.stankingibdd.repository.AccidentRepository;
 import com.example.stankingibdd.repository.CategoryRepository;
 import com.example.stankingibdd.repository.ClientRepository;
@@ -59,6 +62,8 @@ public class EditTablesServiceImpl implements EditTablesService {
 
     private final AccidentRepository accidentRepository;
     private final AccidentMapper accidentMapper;
+
+    private final AccidentCompositionRepository accidentCompositionRepository;
 
     @Override
     public void addClient(ClientDto clientDto) {
@@ -417,6 +422,63 @@ public class EditTablesServiceImpl implements EditTablesService {
         }
 
         accidentRepository.deleteByAccidentId(id);
+    }
+
+    @Override
+    public void addAccidentComposition(AccidentCompositionDto accidentCompositionDto) {
+        if (Objects.isNull(accidentCompositionDto)) {
+            final String errorMessage = "Невозможно добавить пустую связть аварии и транспортного средства";
+            throw new EditTablesException(errorMessage);
+        }
+
+        UUID id = UUID.fromString(accidentCompositionDto.getAccidentId());
+        String registrationNumber = accidentCompositionDto.getRegistrationNumber();
+        if (!vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
+            final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (!accidentRepository.existsAccidentByAccidentId(id)) {
+            final String errorMessage = "Аварии с идентификатором " + accidentCompositionDto.getAccidentId() + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (accidentCompositionRepository.existsAccidentByAccidentIdAndRegistrationNumber(id, registrationNumber)) {
+            final String errorMessage = "Связь аварии с идентификатором " + accidentCompositionDto.getAccidentId() + " и транспортного средства с регистрационным знаком " + registrationNumber + " уже существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
+        Accident accident = accidentRepository.findByAccidentId(id);
+
+        AccidentComposition accidentComposition = AccidentComposition.builder()
+                .accidentId(id)
+                .accident(accident)
+                .vehicleId(vehicle.getVehicleId())
+                .vehicle(vehicle)
+                .build();
+        accidentCompositionRepository.save(accidentComposition);
+    }
+
+    @Override
+    public void deleteAccidentComposition(String accidentId, String registrationNumber) {
+        if (!StringUtils.hasLength(accidentId) || !StringUtils.hasLength(registrationNumber)) {
+            final String errorMessage = "Невозможно удалить связь аварии и транспортного средства с пустыми входными данными";
+            throw new EditTablesException(errorMessage);
+        }
+
+        UUID id = UUID.fromString(accidentId);
+        if (!vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
+            final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (!accidentCompositionRepository.existsAccidentByAccidentIdAndRegistrationNumber(id, registrationNumber)) {
+            final String errorMessage = "Связь аварии с идентификатором " + accidentId + " и транспортного средства с регистрационным знаком " + registrationNumber + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        accidentCompositionRepository.deleteByAccidentIdAndRegistrationNumber(id, registrationNumber);
     }
 
     /**

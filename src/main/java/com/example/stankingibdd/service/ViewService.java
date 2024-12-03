@@ -60,9 +60,18 @@ public interface ViewService {
      * Получить template страницы управления таблицей аварий
      *
      * @param model модель для отправки на ui {@link Model}
+     * @param accidentId фильтр по идентификатору аварии {@link Model}
      * @return template страницы
      */
-    String getAccidentsPage(Model model);
+    String getAccidentsPage(String accidentId, Model model);
+
+    /**
+     * Получить template страницы управления таблицей состава аварий
+     *
+     * @param model модель для отправки на ui {@link Model}
+     * @return template страницы
+     */
+    String getAccidentCompositionsPage(Model model);
 
 
     /**

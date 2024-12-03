@@ -47,8 +47,13 @@ public class ViewController implements ErrorController {
     }
 
     @GetMapping("/accidents")
-    public String accidents(Model model) {
-        return viewService.getAccidentsPage(model);
+    public String accidents(@RequestParam(required = false) String accidentId, Model model) {
+        return viewService.getAccidentsPage(accidentId, model);
+    }
+
+    @GetMapping("/accident-compositions")
+    public String accidentCompositions(Model model) {
+        return viewService.getAccidentCompositionsPage(model);
     }
 
     @GetMapping("/login")

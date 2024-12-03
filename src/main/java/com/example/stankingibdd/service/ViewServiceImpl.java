@@ -1,15 +1,18 @@
 package com.example.stankingibdd.service;
 
 import com.example.stankingibdd.entity.Accident;
+import com.example.stankingibdd.entity.AccidentComposition;
 import com.example.stankingibdd.entity.Client;
 import com.example.stankingibdd.entity.DrivingLicense;
 import com.example.stankingibdd.entity.Fine;
 import com.example.stankingibdd.entity.Vehicle;
+import com.example.stankingibdd.mapper.AccidentCompositionMapper;
 import com.example.stankingibdd.mapper.AccidentMapper;
 import com.example.stankingibdd.mapper.ClientMapper;
 import com.example.stankingibdd.mapper.DrivingLicenseMapper;
 import com.example.stankingibdd.mapper.FineMapper;
 import com.example.stankingibdd.mapper.VehicleMapper;
+import com.example.stankingibdd.model.AccidentCompositionDto;
 import com.example.stankingibdd.model.AccidentDto;
 import com.example.stankingibdd.model.CategoryType;
 import com.example.stankingibdd.model.ClientDto;
@@ -17,6 +20,7 @@ import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
 import com.example.stankingibdd.model.DrivingLicenseDto;
 import com.example.stankingibdd.model.FineDto;
 import com.example.stankingibdd.model.VehicleDto;
+import com.example.stankingibdd.repository.AccidentCompositionRepository;
 import com.example.stankingibdd.repository.AccidentRepository;
 import com.example.stankingibdd.repository.ClientRepository;
 import com.example.stankingibdd.repository.DrivingLicenseRepository;
@@ -59,6 +63,9 @@ public class ViewServiceImpl implements ViewService {
     private final AccidentRepository accidentRepository;
     private final AccidentMapper accidentMapper;
 
+    private final AccidentCompositionRepository accidentCompositionRepository;
+    private final AccidentCompositionMapper accidentCompositionMapper;
+
     @Override
     public String getIndexPage(Model model) {
         model.addAttribute("currentClient", SecurityContextHolder.getContext()
@@ -74,13 +81,8 @@ public class ViewServiceImpl implements ViewService {
                 .getAuthentication()
                 .getPrincipal();
         List<Client> clientList = (StringUtils.hasLength(phone)) ? clientRepository.findAll().stream()
-                .filter(client -> {
-                    if (Objects.nonNull(client.getDrivingLicense())) {
-                        return phone.equals(client.getPhone());
-                    }
-
-                    return false;
-                }).toList() : clientRepository.findAll();
+                .filter(client -> phone.equals(client.getPhone()))
+                .toList() : clientRepository.findAll();
         Map<String, DrivingLicense> drivingLicenseByPhoneMap = clientList.stream()
                 .filter(client -> Objects.nonNull(client.getDrivingLicense()))
                 .collect(Collectors.toMap(Client::getPhone, Client::getDrivingLicense));
@@ -105,13 +107,8 @@ public class ViewServiceImpl implements ViewService {
                 .getAuthentication()
                 .getPrincipal();
         List<DrivingLicense> drivingLicenseList = (StringUtils.hasLength(drivingLicenseNumber)) ? drivingLicenseRepository.findAll().stream()
-                .filter(drivingLicense -> {
-            if (Objects.nonNull(drivingLicense.getClient())) {
-                return drivingLicenseNumber.equals(drivingLicense.getLicenseNumber());
-            }
-
-            return false;
-        }).toList() : drivingLicenseRepository.findAll();
+                .filter(drivingLicense -> drivingLicenseNumber.equals(drivingLicense.getLicenseNumber()))
+                .toList() : drivingLicenseRepository.findAll();
 
         Map<String, Client> phoneByLicenseNumberMap = drivingLicenseList.stream()
                 .filter(drivingLicense -> Objects.nonNull(drivingLicense.getClient()))
@@ -164,13 +161,9 @@ public class ViewServiceImpl implements ViewService {
         Client currentClient = (Client) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        List<Vehicle> vehicles = (StringUtils.hasLength(registrationNumber)) ? vehicleRepository.findAll().stream().filter(vehicle -> {
-            if (!CollectionUtils.isEmpty(vehicle.getFines())) {
-                return registrationNumber.equals(vehicle.getRegistrationNumber());
-            }
-
-            return false;
-        }).toList() : vehicleRepository.findAll();
+        List<Vehicle> vehicles = (StringUtils.hasLength(registrationNumber)) ? vehicleRepository.findAll().stream()
+                .filter(vehicle -> registrationNumber.equals(vehicle.getRegistrationNumber()))
+                .toList() : vehicleRepository.findAll();
         Map<String, String> registrationNumberByPhone = vehicles.stream()
                 .collect(Collectors.toMap(Vehicle::getRegistrationNumber, vehicle -> vehicle.getClient().getPhone()));
 
@@ -202,16 +195,31 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public String getAccidentsPage(Model model) {
+    public String getAccidentsPage(String accidentId, Model model) {
         Client currentClient = (Client) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        List<Accident> accidents = accidentRepository.findAll();
+        List<Accident> accidents = (StringUtils.hasLength(accidentId)) ? accidentRepository.findAll().stream()
+                .filter(accident -> UUID.fromString(accidentId).equals(accident.getAccidentId()))
+                .toList() : accidentRepository.findAll();
         List<AccidentDto> accidentDtoList = accidentMapper.map(accidents);
 
         model.addAttribute("accidents", accidentDtoList);
         model.addAttribute("currentClient", currentClient);
         return "accidents";
+    }
+
+    @Override
+    public String getAccidentCompositionsPage(Model model) {
+        Client currentClient = (Client) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        List<AccidentComposition> accidentCompositions = accidentCompositionRepository.findAll();
+        List<AccidentCompositionDto> accidentCompositionDtoList = accidentCompositionMapper.map(accidentCompositions);
+
+        model.addAttribute("accidentCompositions", accidentCompositionDtoList);
+        model.addAttribute("currentClient", currentClient);
+        return "accident-compositions";
     }
 
     @Override

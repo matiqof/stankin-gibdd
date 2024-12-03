@@ -1,5 +1,6 @@
 package com.example.stankingibdd.controller;
 
+import com.example.stankingibdd.model.AccidentCompositionDto;
 import com.example.stankingibdd.model.AccidentDto;
 import com.example.stankingibdd.model.ClientDto;
 import com.example.stankingibdd.model.DrivingLicenseCategoryLinkDto;
@@ -241,5 +242,31 @@ public class EditTablesController {
         }
 
         return "redirect:/accidents";
+    }
+
+    @PostMapping("/accident-composition/add")
+    public String addAccidentComposition(@ModelAttribute AccidentCompositionDto accidentCompositionDto, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.addAccidentComposition(accidentCompositionDto);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное добавление новой связи аварии и транспортного средства!");
+        } catch (Exception e) {
+            log.error("Ошибка сохранения новой связи аварии и транспортного средства: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить добавление новой связи аварии и транспортного средства из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/accident-compositions";
+    }
+
+    @PostMapping("/accident-composition/delete")
+    public String deleteAccidentComposition(@RequestParam String accidentId, @RequestParam String registrationNumber, RedirectAttributes redirectAttributes) {
+        try {
+            editTablesService.deleteAccidentComposition(accidentId, registrationNumber);
+            redirectAttributes.addFlashAttribute("successSaveData", "Выполнено успешное удаление связи аварии и транспортного средства!");
+        } catch (Exception e) {
+            log.error("Ошибка удаления связи аварии и транспортного средства: " + e);
+            redirectAttributes.addFlashAttribute("errorSaveData", "Невозможно выполнить удаление связи аварии и транспортного средства из-за ошибки: " + e.getMessage());
+        }
+
+        return "redirect:/accident-compositions";
     }
 }
