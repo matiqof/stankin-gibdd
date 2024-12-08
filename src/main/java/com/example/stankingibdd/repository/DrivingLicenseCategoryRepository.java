@@ -23,4 +23,24 @@ public interface DrivingLicenseCategoryRepository extends JpaRepository<DrivingL
     @Modifying
     @Query("DELETE FROM DrivingLicenseCategory d WHERE d.drivingLicense.licenseNumber = :licenseNumber AND d.category.categoryName = :categoryName")
     void deleteByLicenseNumberAndCategoryName(@Param("licenseNumber") String licenseNumber, @Param("categoryName") String categoryName);
+
+    /**
+     * Удалить все связи по водительскому удостоверению
+     *
+     * @param licenseNumber номер водительского удостоверения
+     */
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM DrivingLicenseCategory d WHERE d.drivingLicense.licenseNumber = :licenseNumber")
+    void deleteByLicenseNumber(@Param("licenseNumber") String licenseNumber);
+
+    /**
+     * Проверить существует ли сзязь с таким номером водительского удостоверения
+     *
+     * @param licenseNumber номер водительского удостоверения
+     * @return true/false в зависимости от того, существует ли такое водительское удостоверение
+     */
+    @Transactional
+    @Query("SELECT CASE WHEN COUNT(d) > 1 THEN true ELSE false END FROM DrivingLicense d WHERE d.licenseNumber = :licenseNumber")
+    boolean existsAnyDrivingLicenseCategoryByLicenseNumber(@Param("licenseNumber") String licenseNumber);
 }

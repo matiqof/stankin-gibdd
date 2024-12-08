@@ -32,8 +32,13 @@ import com.example.stankingibdd.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -65,6 +70,8 @@ public class EditTablesServiceImpl implements EditTablesService {
 
     private final AccidentCompositionRepository accidentCompositionRepository;
 
+    private static final Date currentDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+
     @Override
     public void addClient(ClientDto clientDto) {
         if (Objects.isNull(clientDto)) {
@@ -81,6 +88,16 @@ public class EditTablesServiceImpl implements EditTablesService {
         String passportNumber = clientDto.getPassportNumber();
         if (clientRepository.existsClientByPassportNumber(passportNumber)) {
             final String errorMessage = "Клиент с паспортом " + passportNumber + " уже существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (clientDto.getPassportIssueDate().after(currentDate)) {
+            final String errorMessage = "У клиента указана дата выдачи паспорта " + clientDto.getPassportIssueDate() + " больше текущей даты";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (clientDto.getDateOfBirth().after(currentDate)) {
+            final String errorMessage = "У клиента указана дата рождения " + clientDto.getDateOfBirth() + " больше текущей даты";
             throw new EditTablesException(errorMessage);
         }
 
@@ -108,9 +125,13 @@ public class EditTablesServiceImpl implements EditTablesService {
         }
 
         Client client = clientRepository.findByPhone(phone);
-        if (Objects.nonNull(client.getDrivingLicense())
-                && drivingLicenseRepository.existsDrivingLicenseByLicenseNumber(client.getDrivingLicense().getLicenseNumber())) {
+        if (Objects.nonNull(client.getDrivingLicense())) {
             final String errorMessage = "У клиента с телефоном " + phone + " привязано водительское удостоверение";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (!CollectionUtils.isEmpty(client.getVehicles())) {
+            final String errorMessage = "У клиента с телефоном " + phone + " привязаны транспортные средства";
             throw new EditTablesException(errorMessage);
         }
 
@@ -130,11 +151,28 @@ public class EditTablesServiceImpl implements EditTablesService {
             throw new EditTablesException(errorMessage);
         }
 
+        if (drivingLicenseDto.getIssueDate().after(currentDate)) {
+            final String errorMessage = "Дата выдачи у водительского удостоверения больше, чем текущая дата";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (drivingLicenseDto.getIssueDate().after(drivingLicenseDto.getExpirationDate())) {
+            final String errorMessage = "Дата выдачи у водительского удостоверения больше, чем дата истекания";
+            throw new EditTablesException(errorMessage);
+        }
+
         String phone = drivingLicenseDto.getPhone();
         checkClientByPhone(phone);
         Client client = clientRepository.findByPhone(phone);
         if (Objects.nonNull(client.getDrivingLicense())) {
             final String errorMessage = "Для клиент с указанным номером телефона " + phone + " уже существует водительское удостоверение";
+            throw new EditTablesException(errorMessage);
+        }
+
+        LocalDate currentLocalDate = currentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDateOfBirthday = client.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (Period.between(currentLocalDate, localDateOfBirthday).getYears() < 18) {
+            final String errorMessage = "Клиенту с указанным номером телефона " + phone + " меньше 18 лет";
             throw new EditTablesException(errorMessage);
         }
 
@@ -170,6 +208,13 @@ public class EditTablesServiceImpl implements EditTablesService {
                 throw new EditTablesException(errorMessage);
             }
 
+            LocalDate currentLocalDate = currentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate localDateOfBirthday = client.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            if (Period.between(currentLocalDate, localDateOfBirthday).getYears() < 18) {
+                final String errorMessage = "Клиенту с указанным номером телефона " + phone + " меньше 18 лет";
+                throw new EditTablesException(errorMessage);
+            }
+
             drivingLicense.setClient(client);
         }
 
@@ -188,6 +233,7 @@ public class EditTablesServiceImpl implements EditTablesService {
             throw new EditTablesException(errorMessage);
         }
 
+        drivingLicenseCategoryRepository.deleteByLicenseNumber(licenseNumber);
         drivingLicenseRepository.deleteByLicenseNumber(licenseNumber);
     }
 
@@ -244,6 +290,11 @@ public class EditTablesServiceImpl implements EditTablesService {
             throw new EditTablesException(errorMessage);
         }
 
+        if (!drivingLicenseCategoryRepository.existsAnyDrivingLicenseCategoryByLicenseNumber(licenseNumber)) {
+            final String errorMessage = "У водительского удостоверения " + licenseNumber + " не может не быть категорий";
+            throw new EditTablesException(errorMessage);
+        }
+
         drivingLicenseCategoryRepository.deleteByLicenseNumberAndCategoryName(licenseNumber, categoryName);
     }
 
@@ -257,6 +308,16 @@ public class EditTablesServiceImpl implements EditTablesService {
         String registrationNumber = vehicleDto.getRegistrationNumber();
         if (vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
             final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " уже существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (vehicleDto.getYearOfManufacture() > currentDate.getYear()) {
+            final String errorMessage = "Год выпуска транспортного средства больше текущего года";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (vehicleDto.getRegistrationDate().after(currentDate)) {
+            final String errorMessage = "Дата регистрации у транспортного средства больше, чем текущая дата";
             throw new EditTablesException(errorMessage);
         }
 
@@ -280,6 +341,16 @@ public class EditTablesServiceImpl implements EditTablesService {
         String registrationNumber = vehicleDto.getRegistrationNumber();
         if (!vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
             final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (vehicleDto.getYearOfManufacture() > currentDate.getYear()) {
+            final String errorMessage = "Год выпуска транспортного средства больше текущего года";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (vehicleDto.getRegistrationDate().after(currentDate)) {
+            final String errorMessage = "Дата регистрации у транспортного средства больше, чем текущая дата";
             throw new EditTablesException(errorMessage);
         }
 
@@ -309,6 +380,17 @@ public class EditTablesServiceImpl implements EditTablesService {
             throw new EditTablesException(errorMessage);
         }
 
+        Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
+        if (!CollectionUtils.isEmpty(vehicle.getFines())) {
+            final String errorMessage = "У транспортного средства с номером " + registrationNumber + " существуют штрафы";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (!CollectionUtils.isEmpty(vehicle.getAccidentCompositions())) {
+            final String errorMessage = "У транспортного средства с номером " + registrationNumber + " имеются ДТП";
+            throw new EditTablesException(errorMessage);
+        }
+
         vehicleRepository.deleteByRegistrationNumber(registrationNumber);
     }
 
@@ -322,6 +404,16 @@ public class EditTablesServiceImpl implements EditTablesService {
         String registrationNumber = fineDto.getVehicleRegistrationNumber();
         if (!vehicleRepository.existsVehicleByRegistrationNumber(registrationNumber)) {
             final String errorMessage = "Транспортное средство с регистрационным знаком " + registrationNumber + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (fineDto.getDate().after(currentDate)) {
+            final String errorMessage = "Дата штрафа у транспортного средства больше, чем текущая дата";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (fineDto.getAmount() <= 0) {
+            final String errorMessage = "У штраф указана сумма меньше 1";
             throw new EditTablesException(errorMessage);
         }
 
@@ -343,6 +435,16 @@ public class EditTablesServiceImpl implements EditTablesService {
         UUID fineId = UUID.fromString(fineDto.getFineId());
         if (!fineRepository.existsFineByFineId(fineId)) {
             final String errorMessage = "Штраф с идентификатором " + fineId + " не существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (fineDto.getDate().after(currentDate)) {
+            final String errorMessage = "Дата штрафа у транспортного средства больше, чем текущая дата";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (fineDto.getAmount() <= 0) {
+            final String errorMessage = "У штраф указана сумма меньше 1";
             throw new EditTablesException(errorMessage);
         }
 
@@ -421,6 +523,7 @@ public class EditTablesServiceImpl implements EditTablesService {
             throw new EditTablesException(errorMessage);
         }
 
+        accidentCompositionRepository.deleteByAccidentId(id);
         accidentRepository.deleteByAccidentId(id);
     }
 

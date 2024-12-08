@@ -1,8 +1,10 @@
 package com.example.stankingibdd.entity;
 
+import com.example.stankingibdd.model.DrivingLicenseCategoryId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -19,12 +21,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "driving_license_category")
+@IdClass(DrivingLicenseCategoryId.class)
 public class DrivingLicenseCategory {
 
     @Id
     @Column(name = "license_id", nullable = false, unique = true)
     private UUID licenseId;
 
+    @Id
     @Column(name = "category_id", nullable = false)
     private UUID categoryId;
 

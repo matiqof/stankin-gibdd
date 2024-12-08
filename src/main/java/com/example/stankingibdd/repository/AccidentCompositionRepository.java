@@ -35,7 +35,7 @@ public interface AccidentCompositionRepository extends JpaRepository<AccidentCom
     boolean existsAccidentByAccidentIdAndRegistrationNumber(@Param("accidentId") UUID accidentId, @Param("registrationNumber") String registrationNumber);
 
     /**
-     * Удалить состав аварии по идентификаторам
+     * Удалить состав аварии по идентификаторам и регистрационному номеру транспортного средства
      *
      * @param accidentId идентификатор аварии
      * @param registrationNumber регистрационный номер транспортного средства
@@ -44,4 +44,14 @@ public interface AccidentCompositionRepository extends JpaRepository<AccidentCom
     @Modifying
     @Query("DELETE FROM AccidentComposition ac WHERE ac.accidentId = :accidentId and ac.vehicle.registrationNumber = :registrationNumber")
     void deleteByAccidentIdAndRegistrationNumber(@Param("accidentId") UUID accidentId, @Param("registrationNumber") String registrationNumber);
+
+    /**
+     * Удалить все составы аварий по идентификаторам
+     *
+     * @param accidentId идентификатор аварии
+     */
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM AccidentComposition ac WHERE ac.accidentId = :accidentId")
+    void deleteByAccidentId(@Param("accidentId") UUID accidentId);
 }

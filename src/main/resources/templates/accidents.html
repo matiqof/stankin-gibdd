@@ -22,6 +22,7 @@
     <table id="dataTable" class="table-wrapper">
       <thead>
       <tr>
+        <th>Идентификатор аварии</th>
         <th>Дата</th>
         <th>Время</th>
         <th>Место</th>
@@ -31,6 +32,7 @@
       </thead>
       <tbody>
       <tr th:each="accident : ${accidents}" th:id="'accident-' + ${accident.accidentId}">
+        <td th:text="${accident.accidentId}"></td>
         <td th:text="${#dates.format(accident.date, 'yyyy-MM-dd')}"></td>
         <td th:text="${#dates.format(accident.time, 'HH:mm')}"></td>
         <td th:text="${accident.location}"></td>

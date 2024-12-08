@@ -55,7 +55,7 @@
                 </td>
                 <td>
                     <button class="edit-button" th:attr="onclick='editVehicle(\'' + ${vehicle.registrationNumber} + '\', \'' + ${vehicle.model} + '\', \'' + ${vehicle.manufacturer} + '\', \'' + ${vehicle.yearOfManufacture} + '\', \'' + ${vehicle.color} + '\', \'' + ${vehicle.mileage} + '\', \'' + ${vehicle.engineVolume} + '\', \'' + ${vehicle.horsepower} + '\', \'' + ${#dates.format(vehicle.registrationDate, 'yyyy-MM-dd')} + '\', \'' + ${vehicle.registrationLocation} + '\', \'' + ${vehicle.phone} + '\')'">Редактировать</button>
-                    <form th:action="@{/driving-license/delete}" method="post" style="display: inline;">
+                    <form th:action="@{/vehicle/delete}" method="post" style="display: inline;">
                         <input type="hidden" name="registrationNumber" th:value="${vehicle.registrationNumber}">
                         <button type="submit" class="delete-button">
                             <img th:src="@{/images/delete.png}" alt="Delete" class="delete-icon">

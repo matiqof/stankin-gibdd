@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +37,7 @@ public class ClientServiceImpl implements ClientService {
     private final PasswordEncoder passwordEncoder;
 
     private static final int EXPIRATION = 60 * 24;
+    private static final Date currentDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     @Override
     public void forgotPassword(ForgotPasswordRequest request, boolean isFromProfile) {
@@ -125,6 +128,16 @@ public class ClientServiceImpl implements ClientService {
         if (!clientFromDb.getPassportNumber().equals(passportNumber)
                 && clientRepository.existsClientByPassportNumber(passportNumber)) {
             final String errorMessage = "Клиент с паспортом " + passportNumber +  " уже существует";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (clientDto.getPassportIssueDate().after(currentDate)) {
+            final String errorMessage = "У клиента указана дата выдачи паспорта " + clientDto.getPassportIssueDate() + " больше текущей даты";
+            throw new EditTablesException(errorMessage);
+        }
+
+        if (clientDto.getDateOfBirth().after(currentDate)) {
+            final String errorMessage = "У клиента указана дата рождения " + clientDto.getDateOfBirth() + " больше текущей даты";
             throw new EditTablesException(errorMessage);
         }
 
